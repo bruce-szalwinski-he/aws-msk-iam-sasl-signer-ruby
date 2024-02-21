@@ -48,7 +48,7 @@ module Aws
               signer = Aws::Sigv4::Signer.new(
                 service: "kafka-cluster",
                 region: @region,
-                credentials: credentials,
+                credentials: credentials
               )
               signer.presign_url(
                 http_method: "GET",
