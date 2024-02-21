@@ -1,10 +1,10 @@
 source "https://rubygems.org"
 gemspec
 
-gem 'activesupport'
+gem 'activesupport', '~> 7.1'
 gem 'aws-sdk-core', '~> 3.191'
-gem 'aws-sdk-kafka'
-gem 'aws-sigv4'
+gem 'aws-sdk-kafka', '~> 1.68'
+gem 'aws-sigv4', '~> 1.8'
 gem "minitest", "~> 5.11"
 gem "minitest-stub_any_instance", "~> 1.0"
 gem "minitest-rg", "~> 5.3"
