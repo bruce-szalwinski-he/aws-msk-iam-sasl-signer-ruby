@@ -11,13 +11,30 @@ module Aws::Msk::Iam::Sasl::Signer
     DEFAULT_TOKEN_EXPIRY_SECONDS = 900
     LIB_NAME = "aws-msk-iam-sasl-signer-ruby"
     USER_AGENT_KEY = "User-Agent"
+    SESSION_NAME = "MSKSASLDefaultSession"
 
     def initialize(region:)
       @region = region
     end
 
-    def generate_auth_token
+    def generate_auth_token(aws_debug: false)
       credentials = load_default_credentials
+      if aws_debug
+        log_caller_identity(credentials)
+      end
+      url = presign(credentials, endpoint_url)
+      [urlsafe_encode64(user_agent(url)), expiration_time_ms(url)]
+    end
+
+    def generate_auth_token_from_profile(profile)
+      credentials = load_credentials_from_profile(profile)
+      url = presign(credentials, endpoint_url)
+      [urlsafe_encode64(user_agent(url)), expiration_time_ms(url)]
+    end
+
+    def generate_auth_token_from_role_arn(role_arn, session_name=nil)
+      session_name ||= SESSION_NAME
+      credentials = load_credentials_from_role_arn(role_arn, session_name)
       url = presign(credentials, endpoint_url)
       [urlsafe_encode64(user_agent(url)), expiration_time_ms(url)]
     end
@@ -26,6 +43,17 @@ module Aws::Msk::Iam::Sasl::Signer
 
     def load_default_credentials
       Credentials.new.load_default_credentials
+    end
+
+    def load_credentials_from_profile(profile)
+      credentials = Aws::SharedCredentials.new(profile_name: profile)
+      credentials.credentials
+    end
+
+    def load_credentials_from_role_arn(role_arn, session_name)
+      sts = Aws::STS::Client.new
+      assumed_role = sts.assume_role({ role_arn: role_arn, role_session_name: session_name })
+      assumed_role.credentials
     end
 
     def endpoint_url
@@ -64,6 +92,16 @@ module Aws::Msk::Iam::Sasl::Signer
       signing_date = params.find { |param| param[0] == "X-Amz-Date" }
       signing_time = DateTime.strptime(signing_date[1], "%Y%m%dT%H%M%SZ")
       1000 * (signing_time.to_time.to_i + DEFAULT_TOKEN_EXPIRY_SECONDS)
+    end
+
+    def log_caller_identity(credentials)
+      sts = Aws::STS::Client.new(
+        access_key_id: credentials.access_key_id,
+        secret_access_key: credentials.secret_access_key,
+        session_token: credentials.session_token
+      )
+      caller_identity = sts.get_caller_identity
+      puts "Credentials Identity: {UserId: #{caller_identity.user_id}, Account: #{caller_identity.account}, Arn: #{caller_identity.arn}}"
     end
   end
 end
