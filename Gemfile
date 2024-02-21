@@ -1,13 +1,13 @@
 source "https://rubygems.org"
 gemspec
 
-gem 'activesupport', '~> 7.1'
-gem 'aws-sdk-core', '~> 3.191'
-gem 'aws-sdk-kafka', '~> 1.68'
-gem 'aws-sigv4', '~> 1.8'
+gem "activesupport", "~> 7.1"
+gem "aws-sdk-core", "~> 3.191"
+gem "aws-sdk-kafka", "~> 1.68"
+gem "aws-sigv4", "~> 1.8"
 gem "minitest", "~> 5.11"
-gem "minitest-stub_any_instance", "~> 1.0"
 gem "minitest-rg", "~> 5.3"
+gem "minitest-stub_any_instance", "~> 1.0"
 gem "rake", "~> 13.0"
 gem "rubocop", "1.60.2"
 gem "rubocop-minitest", "0.34.5"
