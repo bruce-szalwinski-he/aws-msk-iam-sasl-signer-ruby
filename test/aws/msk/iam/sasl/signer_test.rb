@@ -1,5 +1,4 @@
 require "test_helper"
-require "aws-sdk-core"
 require "aws-sdk-kafka"
 require "base64"
 
