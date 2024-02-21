@@ -1,7 +1,6 @@
 source "https://rubygems.org"
 gemspec
 
-gem "activesupport", "~> 7.1"
 gem "aws-sdk-core", "~> 3.191"
 gem "aws-sdk-kafka", "~> 1.68"
 gem "aws-sigv4", "~> 1.8"

@@ -41,7 +41,7 @@ module Aws
               query_params = {
                 Action: "kafka-cluster:Connect"
               }
-              URI::HTTPS.build(host: host, path: "/", query: query_params.to_query)
+              URI::HTTPS.build(host: host, path: "/", query: URI.encode_www_form(query_params))
             end
 
             def presign(credentials, url)
