@@ -13,9 +13,6 @@ module Aws
           class MSKTokenProvider
             ENDPOINT_URL_TEMPLATE = "kafka.{}.amazonaws.com".freeze
             DEFAULT_TOKEN_EXPIRY_SECONDS = 900
-            ACTION_TYPE = "Action".freeze
-            ACTION_NAME = "kafka-cluster:Connect".freeze
-            SIGNING_NAME = "kafka-cluster".freeze
             LIB_NAME = "aws-msk-iam-sasl-signer-ruby".freeze
             USER_AGENT_KEY = "User-Agent".freeze
 
