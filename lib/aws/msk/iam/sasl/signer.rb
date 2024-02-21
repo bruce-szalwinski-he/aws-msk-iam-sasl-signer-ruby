@@ -58,10 +58,9 @@ module Aws
             end
 
             def user_agent(url)
-              uri = URI.parse(url)
-              new_query_ar = URI.decode_www_form(String(uri.query)) << [USER_AGENT_KEY, "#{LIB_NAME}/#{VERSION}"]
-              uri.query = URI.encode_www_form(new_query_ar)
-              uri.to_s
+              new_query_ar = URI.decode_www_form(url.query) << [USER_AGENT_KEY, "#{LIB_NAME}/#{VERSION}"]
+              url.query = URI.encode_www_form(new_query_ar)
+              url.to_s
             end
 
             def urlsafe_encode64(url)
@@ -69,8 +68,7 @@ module Aws
             end
 
             def expiration_time_ms(url)
-              uri = URI.parse(url)
-              params = URI.decode_www_form(String(uri.query))
+              params = URI.decode_www_form(String(url.query))
               signing_date = params.find { |param| param[0] == "X-Amz-Date" }
               signing_time = DateTime.strptime(signing_date[1], "%Y%m%dT%H%M%SZ")
               1000 * (signing_time.to_time.to_i + DEFAULT_TOKEN_EXPIRY_SECONDS)
