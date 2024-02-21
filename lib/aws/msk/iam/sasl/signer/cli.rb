@@ -13,9 +13,15 @@ module Aws::Msk::Iam::Sasl::Signer
 
     desc "generate", "Generate a token"
     option :region, type: :string, default: "us-east-1", desc: "The AWS region"
+    option :aws_profile, type: :string, desc: "Name of the AWS profile"
     def generate
-      token_provider = MSKTokenProvider.new(region: options[:region])
-      signed_url, expiration_time_ms = token_provider.generate_auth_token
+      if options[:aws_profile]
+        puts "profile"
+      else
+        token_provider = MSKTokenProvider.new(region: options[:region])
+        signed_url, expiration_time_ms = token_provider.generate_auth_token
+      end
+
       puts "Token: #{signed_url}"
       puts "Expiration Time: #{expiration_time_ms}"
     end

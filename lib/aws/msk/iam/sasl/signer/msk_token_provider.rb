@@ -7,10 +7,10 @@ require "uri"
 
 module Aws::Msk::Iam::Sasl::Signer
   class MSKTokenProvider
-    ENDPOINT_URL_TEMPLATE = "kafka.{}.amazonaws.com".freeze
+    ENDPOINT_URL_TEMPLATE = "kafka.{}.amazonaws.com"
     DEFAULT_TOKEN_EXPIRY_SECONDS = 900
-    LIB_NAME = "aws-msk-iam-sasl-signer-ruby".freeze
-    USER_AGENT_KEY = "User-Agent".freeze
+    LIB_NAME = "aws-msk-iam-sasl-signer-ruby"
+    USER_AGENT_KEY = "User-Agent"
 
     def initialize(region:)
       @region = region
