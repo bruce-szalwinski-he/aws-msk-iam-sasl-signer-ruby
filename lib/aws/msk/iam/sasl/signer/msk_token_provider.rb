@@ -6,7 +6,6 @@ require "base64"
 require "uri"
 
 module Aws::Msk::Iam::Sasl::Signer
-
   class MSKTokenProvider
     ENDPOINT_URL_TEMPLATE = "kafka.{}.amazonaws.com".freeze
     DEFAULT_TOKEN_EXPIRY_SECONDS = 900
