@@ -22,7 +22,7 @@ class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
 
       uri = URI.parse(decoded_signed_url)
       params = URI.decode_www_form(String(uri.query))
-      params = params.group_by(&:first).map { |k, a| [k, a.map(&:last)] }.to_h
+      params = params.group_by(&:first).transform_values { |a| a.map(&:last) }
 
       assert_equal "kafka-cluster:Connect", params["Action"][0]
       assert_equal "AWS4-HMAC-SHA256", params["X-Amz-Algorithm"][0]
