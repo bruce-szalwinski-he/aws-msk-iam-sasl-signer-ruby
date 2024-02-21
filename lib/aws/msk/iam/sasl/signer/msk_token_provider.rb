@@ -19,9 +19,7 @@ module Aws::Msk::Iam::Sasl::Signer
 
     def generate_auth_token(aws_debug: false)
       credentials = load_default_credentials
-      if aws_debug
-        log_caller_identity(credentials)
-      end
+      log_caller_identity(credentials) if aws_debug
       url = presign(credentials, endpoint_url)
       [urlsafe_encode64(user_agent(url)), expiration_time_ms(url)]
     end
@@ -101,7 +99,10 @@ module Aws::Msk::Iam::Sasl::Signer
         session_token: credentials.session_token
       )
       caller_identity = sts.get_caller_identity
-      puts "Credentials Identity: {UserId: #{caller_identity.user_id}, Account: #{caller_identity.account}, Arn: #{caller_identity.arn}}"
+      puts "Credentials Identity:"
+      puts "  UserId: #{caller_identity.user_id}"
+      puts "  Account: #{caller_identity.account}"
+      puts "  Arn: #{caller_identity.arn}}"
     end
   end
 end
