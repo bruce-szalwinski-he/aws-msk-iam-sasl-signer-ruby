@@ -1,6 +1,5 @@
 require "aws-sdk-kafka"
 require "aws-sigv4"
-require "active_support/core_ext/hash"
 require "base64"
 require "uri"
 
