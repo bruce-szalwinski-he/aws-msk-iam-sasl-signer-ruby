@@ -4,7 +4,6 @@ require "aws-sdk-kafka"
 require "base64"
 
 class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
-
   def setup
     @creds = Aws::Credentials.new("access_key_id", "secret_access", "session_token")
   end
@@ -23,9 +22,9 @@ class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
 
       uri = URI.parse(decoded_signed_url)
       params = URI.decode_www_form(String(uri.query))
-      params = Hash[ params.group_by(&:first).map{ |k,a| [k,a.map(&:last)] } ]
+      params = params.group_by(&:first).map { |k, a| [k, a.map(&:last)] }.to_h
 
-      assert_equal"kafka-cluster:Connect", params["Action"][0]
+      assert_equal "kafka-cluster:Connect", params["Action"][0]
       assert_equal "AWS4-HMAC-SHA256", params["X-Amz-Algorithm"][0]
       assert_equal "session_token", params["X-Amz-Security-Token"][0]
       assert_equal "host", params["X-Amz-SignedHeaders"][0]
@@ -34,7 +33,7 @@ class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
 
       credentials = params["X-Amz-Credential"][0]
       split_credentials = credentials.split("/")
-      assert_equal  @creds.access_key_id, split_credentials[0]
+      assert_equal @creds.access_key_id, split_credentials[0]
       assert_equal "us-east-1", split_credentials[2]
       assert_equal "kafka-cluster", split_credentials[3]
       assert_equal "aws4_request", split_credentials[4]
@@ -45,7 +44,6 @@ class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
 
       actual_expires = 1000 * (params["X-Amz-Expires"][0].to_i + date_obj.to_time.to_i)
       assert_equal expiration_time_ms, actual_expires
-
     end
   end
 end

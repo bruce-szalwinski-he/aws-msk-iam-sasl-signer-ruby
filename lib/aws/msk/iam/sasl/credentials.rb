@@ -5,7 +5,6 @@ module Aws
     module Iam
       module Sasl
         module Signer
-
           class Credentials
             def load_default_credentials
               client = Aws::Kafka::Client.new(region: "us-east-1")
