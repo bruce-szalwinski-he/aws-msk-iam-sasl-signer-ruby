@@ -108,3 +108,12 @@ Style/StringLiterals:
 
 Style/TrivialAccessors:
   AllowPredicates: true
+
+inherit_mode:
+  merge:
+    - AllowedNames
+
+Naming/MethodParameterName:
+  AllowedNames:
+    - a
+    - b
