@@ -75,7 +75,7 @@ Commands:
 
 You may receive an Access denied error and there may be some doubt as to which credential is being exactly used.
 The credential may be sourced from a role ARN, EC2 instance profile, credential profile etc.
-When calling `generate_auth_token`, you can set `aws_debug` argument to True.
+When calling `generate_auth_token`, you can set `aws_debug` argument to `true`.
 
 ```ruby
 MSKAuthTokenProvider.generate_auth_token(aws_debug: true)
@@ -84,7 +84,7 @@ MSKAuthTokenProvider.generate_auth_token(aws_debug: true)
 The signer library will print a debug log of the form:
 
 ```ruby
-Credentials Identity: {UserId: ABCD:test124, Account: 1234567890, Arn: arn:aws:sts::1234567890:assumed-role/abc/test124}
+Credentials Identity: {"user_id": "ABCD:test124", "account": "1234567890", "arn": "arn:aws:sts::1234567890:assumed-role/abc/test124"}
 ```
 
 ## Support

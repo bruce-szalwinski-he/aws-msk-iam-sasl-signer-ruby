@@ -27,5 +27,5 @@ Gem::Specification.new do |spec|
 
   # Runtime dependencies
   spec.add_dependency "aws-sdk-kafka", "~> 1.68"
-  # spec.add_dependency "thor", "~> 1.2"
+  spec.add_dependency "thor", "~> 1.3"
 end

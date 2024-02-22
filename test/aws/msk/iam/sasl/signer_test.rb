@@ -1,6 +1,8 @@
 require "test_helper"
 require "aws-sdk-kafka"
+require "aws-sdk-sts"
 require "base64"
+require "capture"
 
 class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
   def setup
@@ -48,5 +50,38 @@ class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
 
     actual_expires = 1000 * (@params["X-Amz-Expires"][0].to_i + date_obj.to_time.to_i)
     assert_equal @expiration_time_ms, actual_expires
+  end
+
+  def test_generate_auth_token_log_caller_identity
+    stub = Aws::STS::Client.new(stub_responses: true)
+    c = Capture.capture do
+      ::Aws::Msk::Iam::Sasl::Signer::CredentialResolver.stub_any_instance :from_credential_provider_chain, @creds do
+        Aws::STS::Client.stub :new, stub do
+          token_provider = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: "us-east-1")
+          @signed_url, @expiration_time_ms = token_provider.generate_auth_token(aws_debug: true)
+        end
+      end
+    end
+    assert_match "Credentials Identity", c.stdout
+  end
+
+  def test_generate_auth_token_from_profile
+    ::Aws::Msk::Iam::Sasl::Signer::CredentialResolver.stub_any_instance :from_profile, @creds do
+      token_provider = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: "us-east-1")
+      @signed_url, @expiration_time_ms = token_provider.generate_auth_token_from_profile(profile: "default")
+      refute_nil @signed_url
+      refute_nil @expiration_time_ms
+    end
+  end
+
+  def test_generate_auth_token_from_role_arn
+    ::Aws::Msk::Iam::Sasl::Signer::CredentialResolver.stub_any_instance :from_role_arn, @creds do
+      token_provider = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: "us-east-1")
+      @signed_url, @expiration_time_ms = token_provider.generate_auth_token_from_role_arn(
+        role_arn: "arn:aws:iam::123456789012:role/role-name"
+      )
+      refute_nil @signed_url
+      refute_nil @expiration_time_ms
+    end
   end
 end
