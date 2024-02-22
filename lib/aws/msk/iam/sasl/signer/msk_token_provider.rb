@@ -4,6 +4,7 @@ require "aws-sdk-kafka"
 require "aws-sigv4"
 require "base64"
 require "uri"
+require "json"
 
 module Aws::Msk::Iam::Sasl::Signer
   class MSKTokenProvider
@@ -12,6 +13,9 @@ module Aws::Msk::Iam::Sasl::Signer
     LIB_NAME = "aws-msk-iam-sasl-signer-ruby"
     USER_AGENT_KEY = "User-Agent"
     SESSION_NAME = "MSKSASLDefaultSession"
+    CallerIdentity = Data.define(:user_id, :account, :arn)
+
+
 
     def initialize(region:)
       @region = region
@@ -19,7 +23,7 @@ module Aws::Msk::Iam::Sasl::Signer
 
     def generate_auth_token(aws_debug: false)
       credentials = CredentialResolver.new.from_credential_provider_chain(@region)
-      log_caller_identity(credentials) if aws_debug
+      log_caller_identity(credentials, @region) if aws_debug
       url = presign(credentials, endpoint_url)
       [urlsafe_encode64(user_agent(url)), expiration_time_ms(url)]
     end
@@ -77,17 +81,21 @@ module Aws::Msk::Iam::Sasl::Signer
       1000 * (signing_time.to_time.to_i + DEFAULT_TOKEN_EXPIRY_SECONDS)
     end
 
-    def log_caller_identity(credentials)
+    def log_caller_identity(credentials, region)
+
       sts = Aws::STS::Client.new(
+        region: region,
         access_key_id: credentials.access_key_id,
         secret_access_key: credentials.secret_access_key,
         session_token: credentials.session_token
       )
-      caller_identity = sts.get_caller_identity
-      puts "Credentials Identity:"
-      puts "  UserId: #{caller_identity.user_id}"
-      puts "  Account: #{caller_identity.account}"
-      puts "  Arn: #{caller_identity.arn}}"
+      caller_identity = CallerIdentity.new(
+        user_id: sts.get_caller_identity.user_id,
+        account: sts.get_caller_identity.account,
+        arn: sts.get_caller_identity.arn
+      )
+
+      puts "Credentials Identity: #{caller_identity.to_h.to_json}"
     end
   end
 end

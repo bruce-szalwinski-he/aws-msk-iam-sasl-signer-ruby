@@ -19,6 +19,15 @@ class Aws::Msk::Iam::Sasl::CliTest < Minitest::Test
     end
   end
 
+  def test_generate_with_debug
+    ::Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.stub_any_instance :generate_auth_token, ["token", Time.now.to_i] do
+      c = Capture.capture do
+        ::Aws::Msk::Iam::Sasl::Signer::CLI.start(%w[generate --aws-debug])
+      end
+      assert_match "Token", c.stdout
+    end
+  end
+
   def test_generate_from_profile_no_profile
     assert_raises Thor::RequiredArgumentMissingError do
       ::Aws::Msk::Iam::Sasl::Signer::CLI.start(["generate-from-profile"], exit_on_failure: false)
