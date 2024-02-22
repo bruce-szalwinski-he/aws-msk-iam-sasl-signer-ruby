@@ -18,41 +18,26 @@ module Aws::Msk::Iam::Sasl::Signer
     end
 
     def generate_auth_token(aws_debug: false)
-      credentials = load_default_credentials
+      credentials = CredentialResolver.new.from_credential_provider_chain(@region)
       log_caller_identity(credentials) if aws_debug
       url = presign(credentials, endpoint_url)
       [urlsafe_encode64(user_agent(url)), expiration_time_ms(url)]
     end
 
     def generate_auth_token_from_profile(profile)
-      credentials = load_credentials_from_profile(profile)
+      credentials = CredentialResolver.new.from_profile(profile:)
       url = presign(credentials, endpoint_url)
       [urlsafe_encode64(user_agent(url)), expiration_time_ms(url)]
     end
 
     def generate_auth_token_from_role_arn(role_arn, session_name=nil)
       session_name ||= SESSION_NAME
-      credentials = load_credentials_from_role_arn(role_arn, session_name)
+      credentials = CredentialResolver.new.from_role_arn(role_arn: role_arn, session_name:session_name)
       url = presign(credentials, endpoint_url)
       [urlsafe_encode64(user_agent(url)), expiration_time_ms(url)]
     end
 
     private
-
-    def load_default_credentials
-      Credentials.new.load_default_credentials
-    end
-
-    def load_credentials_from_profile(profile)
-      credentials = Aws::SharedCredentials.new(profile_name: profile)
-      credentials.credentials
-    end
-
-    def load_credentials_from_role_arn(role_arn, session_name)
-      sts = Aws::STS::Client.new
-      assumed_role = sts.assume_role({ role_arn: role_arn, role_session_name: session_name })
-      assumed_role.credentials
-    end
 
     def endpoint_url
       host = ENDPOINT_URL_TEMPLATE.gsub("{}", @region)

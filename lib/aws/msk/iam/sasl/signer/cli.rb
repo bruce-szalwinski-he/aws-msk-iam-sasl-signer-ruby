@@ -24,7 +24,7 @@ module Aws::Msk::Iam::Sasl::Signer
 
     desc "generate-from-profile", "Generate a token using aws profile"
     option :region, type: :string, default: "us-east-1", desc: "The AWS region"
-    option :aws_profile, type: :string, desc: "Name of the AWS profile"
+    option :aws_profile, type: :string, desc: "Name of the AWS profile", required: true
     def generate_from_profile
       token_provider = MSKTokenProvider.new(region: options[:region])
 
@@ -35,7 +35,7 @@ module Aws::Msk::Iam::Sasl::Signer
 
     desc "generate-from-role-arn", "Generate a token using role arn"
     option :region, type: :string, default: "us-east-1", desc: "The AWS region"
-    option :role_arn, type: :string, desc: "ARN of the role to assume"
+    option :role_arn, type: :string, desc: "ARN of the role to assume", required: true
     option :session_name, type: :string, default: nil, desc: "The session name to use when assuming a role"
     def generate_from_role_arn
       token_provider = MSKTokenProvider.new(region: options[:region])

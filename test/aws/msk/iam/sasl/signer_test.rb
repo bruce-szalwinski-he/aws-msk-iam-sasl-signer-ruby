@@ -5,8 +5,8 @@ require "base64"
 class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
   def setup
     @creds = Aws::Credentials.new("access_key_id", "secret_access", "session_token")
-    ::Aws::Msk::Iam::Sasl::Signer::Credentials.stub_any_instance :load_default_credentials, @creds do
-      token_provider = ::Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: "us-east-1")
+    ::Aws::Msk::Iam::Sasl::Signer::CredentialResolver.stub_any_instance :from_credential_provider_chain, @creds do
+      token_provider = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: "us-east-1")
       @signed_url, @expiration_time_ms = token_provider.generate_auth_token
       @decoded_signed_url = Base64.urlsafe_decode64(@signed_url)
       uri = URI.parse(@decoded_signed_url)
@@ -35,7 +35,7 @@ class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
   def test_generate_auth_token_credentials
     credentials = @params["X-Amz-Credential"][0]
     split_credentials = credentials.split("/")
-    assert_equal @creds.access_key_id, split_credentials[0]
+    assert_equal "access_key_id", split_credentials[0]
     assert_equal "us-east-1", split_credentials[2]
     assert_equal "kafka-cluster", split_credentials[3]
     assert_equal "aws4_request", split_credentials[4]
