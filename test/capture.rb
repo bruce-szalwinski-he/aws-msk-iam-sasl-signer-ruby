@@ -5,15 +5,18 @@ require "stringio"
 class Capture
   Captured = Data.define(:result, :stdout, :stderr)
 
-  def self.capture &block
+  def self.capture
     # redirect output to StringIO objects
-    stdout, stderr = StringIO.new, StringIO.new
-    $stdout, $stderr = stdout, stderr
+    stdout = StringIO.new
+    stderr = StringIO.new
+    $stdout = stdout
+    $stderr = stderr
 
-    result = block.call
+    result = yield
 
     # restore normal output
-    $stdout, $stderr = STDOUT, STDERR
+    $stdout = STDOUT
+    $stderr = STDERR
 
     Captured.new(result: result, stdout: stdout.string, stderr: stderr.string)
   end

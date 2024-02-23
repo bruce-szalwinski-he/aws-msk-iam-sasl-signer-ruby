@@ -15,8 +15,6 @@ module Aws::Msk::Iam::Sasl::Signer
     SESSION_NAME = "MSKSASLDefaultSession"
     CallerIdentity = Data.define(:user_id, :account, :arn)
 
-
-
     def initialize(region:)
       @region = region
     end
@@ -29,22 +27,20 @@ module Aws::Msk::Iam::Sasl::Signer
     end
 
     def generate_auth_token_from_profile(profile)
-      credentials = CredentialResolver.new.from_profile(profile:)
+      credentials = CredentialResolver.new.from_profile(profile)
       url = presign(credentials, endpoint_url)
       [urlsafe_encode64(user_agent(url)), expiration_time_ms(url)]
     end
 
     def generate_auth_token_from_role_arn(role_arn, session_name=nil)
       session_name ||= SESSION_NAME
-      credentials = CredentialResolver.new.from_role_arn(role_arn: role_arn, session_name:session_name)
+      credentials = CredentialResolver.new.from_role_arn(role_arn: role_arn, session_name: session_name)
       url = presign(credentials, endpoint_url)
       [urlsafe_encode64(user_agent(url)), expiration_time_ms(url)]
     end
 
     def generate_auth_token_from_credentials_provider(credentials_provider)
-      unless credentials_provider.respond_to?(:credentials)
-        raise "Invalid credentials provider"
-      end
+      raise "Invalid credentials provider" unless credentials_provider.respond_to?(:credentials)
 
       credentials = credentials_provider.credentials
       url = presign(credentials, endpoint_url)
@@ -92,7 +88,6 @@ module Aws::Msk::Iam::Sasl::Signer
     end
 
     def log_caller_identity(credentials, region)
-
       sts = Aws::STS::Client.new(
         region: region,
         access_key_id: credentials.access_key_id,

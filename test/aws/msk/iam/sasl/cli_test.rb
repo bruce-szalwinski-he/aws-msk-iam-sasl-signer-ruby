@@ -7,7 +7,7 @@ require "thor"
 class Aws::Msk::Iam::Sasl::CliTest < Minitest::Test
   def test_cli_with_no_commands
     c = Capture.capture do
-      ::Aws::Msk::Iam::Sasl::Signer::CLI.start()
+      ::Aws::Msk::Iam::Sasl::Signer::CLI.start
     end
     assert_match "Commands", c.stdout
   end
