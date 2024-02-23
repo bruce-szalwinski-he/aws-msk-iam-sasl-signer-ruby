@@ -17,9 +17,8 @@ module Aws::Msk::Iam::Sasl::Signer
     CallerIdentity = if defined?(Data)
                        Data.define(:user_id, :account, :arn)
                      else
-                        Struct.new(:user_id, :account, :arn)
+                       Struct.new(:user_id, :account, :arn)
                      end
-
 
     def initialize(region:)
       @region = region
