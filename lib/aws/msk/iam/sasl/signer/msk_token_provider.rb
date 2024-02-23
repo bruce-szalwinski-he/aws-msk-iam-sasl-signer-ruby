@@ -13,7 +13,13 @@ module Aws::Msk::Iam::Sasl::Signer
     LIB_NAME = "aws-msk-iam-sasl-signer-ruby"
     USER_AGENT_KEY = "User-Agent"
     SESSION_NAME = "MSKSASLDefaultSession"
-    CallerIdentity = Data.define(:user_id, :account, :arn)
+
+    CallerIdentity = if defined?(Data)
+                       Data.define(:user_id, :account, :arn)
+                     else
+                        Struct.new(:user_id, :account, :arn)
+                     end
+
 
     def initialize(region:)
       @region = region
@@ -95,9 +101,9 @@ module Aws::Msk::Iam::Sasl::Signer
         session_token: credentials.session_token
       )
       caller_identity = CallerIdentity.new(
-        user_id: sts.get_caller_identity.user_id,
-        account: sts.get_caller_identity.account,
-        arn: sts.get_caller_identity.arn
+        sts.get_caller_identity.user_id,
+        sts.get_caller_identity.account,
+        sts.get_caller_identity.arn
       )
 
       puts "Credentials Identity: #{caller_identity.to_h.to_json}"

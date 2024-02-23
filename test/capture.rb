@@ -3,7 +3,11 @@
 require "stringio"
 
 class Capture
-  Captured = Data.define(:result, :stdout, :stderr)
+  Captured = if defined?(Data)
+               Data.define(:result, :stdout, :stderr)
+             else
+               Struct.new(:result, :stdout, :stderr)
+             end
 
   def self.capture
     # redirect output to StringIO objects
@@ -18,6 +22,6 @@ class Capture
     $stdout = STDOUT
     $stderr = STDERR
 
-    Captured.new(result: result, stdout: stdout.string, stderr: stderr.string)
+    Captured.new(result, stdout.string, stderr.string)
   end
 end
