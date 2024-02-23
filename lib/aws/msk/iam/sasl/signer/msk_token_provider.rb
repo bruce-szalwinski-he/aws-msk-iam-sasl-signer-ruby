@@ -15,9 +15,9 @@ module Aws::Msk::Iam::Sasl::Signer
     SESSION_NAME = "MSKSASLDefaultSession"
 
     CALLER_IDENTITY = if defined?(Data)
-                       Data.define(:user_id, :account, :arn)
+                        Data.define(:user_id, :account, :arn)
                       else
-                       Struct.new(:user_id, :account, :arn)
+                        Struct.new(:user_id, :account, :arn)
                       end
 
     def initialize(region:)
