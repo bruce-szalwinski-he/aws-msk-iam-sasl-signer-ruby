@@ -55,10 +55,7 @@ class Aws::Msk::Iam::Sasl::CliTest < Minitest::Test
 
   def test_generate_from_profile_with_known_profile
     ::Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.stub_any_instance :generate_auth_token_from_profile, @token do
-      c = Capture.capture do
-        ::Aws::Msk::Iam::Sasl::Signer::CLI.start(%w[generate-from-profile --aws-profile known], exit_on_failure: false)
-      end
-      assert_match "Token", c.stdout
+      generate_token(%w[generate-from-profile --aws-profile known])
     end
   end
 
@@ -70,10 +67,16 @@ class Aws::Msk::Iam::Sasl::CliTest < Minitest::Test
 
   def test_generate_from_role_arn_with_role_arn
     ::Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.stub_any_instance :generate_auth_token_from_role_arn, @token do
-      c = Capture.capture do
-        ::Aws::Msk::Iam::Sasl::Signer::CLI.start(%w[generate-from-role-arn --role-arn known], exit_on_failure: false)
-      end
-      assert_match "Token", c.stdout
+      generate_token(%w[generate-from-role-arn --role-arn known])
     end
+  end
+
+  private
+
+  def generate_token(given_args)
+    c = Capture.capture do
+      ::Aws::Msk::Iam::Sasl::Signer::CLI.start(given_args, exit_on_failure: false)
+    end
+    assert_match "Token", c.stdout
   end
 end
