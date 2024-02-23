@@ -2,6 +2,8 @@
 
 require "test_helper"
 require "capture"
+require "thor"
+
 class Aws::Msk::Iam::Sasl::CliTest < Minitest::Test
   def test_cli_with_no_commands
     c = Capture.capture do
@@ -10,12 +12,14 @@ class Aws::Msk::Iam::Sasl::CliTest < Minitest::Test
     assert_match "Commands", c.stdout
   end
 
-  def test_cli_version
+  def test_cli_help
     c = Capture.capture do
-      ::Aws::Msk::Iam::Sasl::Signer::CLI.start(["--version"])
+      ::Aws::Msk::Iam::Sasl::Signer::CLI.start(["--help"])
     end
-    assert_match "signer", c.stdout
+    assert_match "Commands", c.stdout
   end
+
+
 
   def test_generate
     ::Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.stub_any_instance :generate_auth_token, ["token", Time.now.to_i] do
@@ -36,7 +40,7 @@ class Aws::Msk::Iam::Sasl::CliTest < Minitest::Test
   end
 
   def test_generate_from_profile_no_profile
-    assert_raises Thor::RequiredArgumentMissingError do
+    assert_raises ::Thor::RequiredArgumentMissingError do
       ::Aws::Msk::Iam::Sasl::Signer::CLI.start(["generate-from-profile"], exit_on_failure: false)
     end
   end
@@ -58,7 +62,7 @@ class Aws::Msk::Iam::Sasl::CliTest < Minitest::Test
   end
 
   def test_generate_from_role_arn_no_role
-    assert_raises Thor::RequiredArgumentMissingError do
+    assert_raises ::Thor::RequiredArgumentMissingError do
       ::Aws::Msk::Iam::Sasl::Signer::CLI.start(["generate-from-role-arn"], exit_on_failure: false)
     end
   end

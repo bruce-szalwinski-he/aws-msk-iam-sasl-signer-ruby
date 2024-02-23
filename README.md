@@ -37,9 +37,97 @@ gem install aws-msk-iam-sasl-signer
 ## Usage
 
 ```ruby
+
+# frozen_string_literal: true
 require "aws/msk/iam/sasl/signer"
+require "json"
+require "rdkafka"
+
+KAFKA_TOPIC = ENV['KAFKA_TOPIC']
+KAFKA_BOOTSTRAP_SERVERS = ENV['KAFKA_BOOTSTRAP_SERVERS']
+
+kafka_config = {
+  "bootstrap.servers": KAFKA_BOOTSTRAP_SERVERS,
+  "security.protocol": 'sasl_ssl',
+  "sasl.mechanisms": 'OAUTHBEARER',
+  "client.id": 'ruby-producer',
+}
+
+def refresh_token(client, config)
+  signer = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: 'us-east-1')
+  token, expiration_time_ms = signer.generate_auth_token
+
+  error_buffer = FFI::MemoryPointer.from_string(' ' * 256)
+  response = Rdkafka::Bindings.rd_kafka_oauthbearer_set_token(
+    client, token, expiration_time_ms, 'kafka-cluster', nil, 0, error_buffer, 256
+  )
+  return unless response != 0
+
+  Rdkafka::Bindings.rd_kafka_oauthbearer_set_token_failure(client,
+                                                           "Failed to set token: #{error_buffer.read_string}")
+
+end
+
+# set the token refresh callback
+Rdkafka::Config.oauthbearer_token_refresh_callback = method(:refresh_token)
+producer = Rdkafka::Config.new(kafka_config).producer
+
+# seed the token
+# events_poll will invoke all registered callbacks, of which oauthbearer_token_refresh_callback is one
+
+consumer = Rdkafka::Config.new(kafka_config).consumer
+consumer.events_poll
+
+# produce some messages
+
+Payload = Data.define(:device_id, :creation_timestamp, :temperature)
+
+loop do
+  payload = Payload.new(
+    device_id: '1234',
+    creation_timestamp: Time.now.to_i,
+    temperature: rand(0..100)
+  )
+
+  handle = producer.produce(
+    topic: KAFKA_TOPIC,
+    payload: payload.to_h.to_json,
+    key: "ruby-kafka-#{rand(0..999)}"
+  )
+  handle.wait(max_wait_timeout: 10)
+
+  sleep(10)
+end
+
 ```
 
+In order to use a named profile to generate the token, replace the `generate_auth_token` function with code below:
+
+```ruby
+  signer = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: 'us-east-1')
+  token, expiration_time_ms = signer.generate_auth_token_from_profile(
+    aws_profile: 'my-profile'
+  )
+```
+
+
+In order to use a role arn to generate the token, replace the `generate_auth_token` function with code below:
+
+```ruby
+    signer = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: 'us-east-1')
+    token, expiration_time_ms = signer.generate_auth_token_from_role_arn(
+        role_arn: 'arn:aws:iam::1234567890:role/my-role'
+    )
+```
+
+In order to use a custom credentials provider, replace the `generate_auth_token` function with code below :
+
+```ruby
+    signer = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: 'us-east-1')
+    token, expiration_time_ms = signer.generate_auth_token_from_credentials_provider(
+      'your-credentials-provider'
+    )
+```
 
 ## Running tests
 
