@@ -2,7 +2,6 @@ source "https://rubygems.org"
 gemspec
 
 gem "aws-sdk-kafka", "~> 1.68"
-gem "aws-sdk-sts", "~> 1.11"
 gem "base64", "~> 0.2"
 gem "minitest", "~> 5.11"
 gem "minitest-rg", "~> 5.3"
