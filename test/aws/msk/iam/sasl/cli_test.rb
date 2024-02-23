@@ -5,6 +5,10 @@ require "capture"
 require "thor"
 
 class Aws::Msk::Iam::Sasl::CliTest < Minitest::Test
+  def setup
+    @token = ["token", Time.now.to_i]
+  end
+
   def test_cli_with_no_commands
     c = Capture.capture do
       ::Aws::Msk::Iam::Sasl::Signer::CLI.start
@@ -20,7 +24,7 @@ class Aws::Msk::Iam::Sasl::CliTest < Minitest::Test
   end
 
   def test_generate
-    ::Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.stub_any_instance :generate_auth_token, ["token", Time.now.to_i] do
+    ::Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.stub_any_instance :generate_auth_token, @token do
       c = Capture.capture do
         ::Aws::Msk::Iam::Sasl::Signer::CLI.start(["generate"])
       end
@@ -29,7 +33,7 @@ class Aws::Msk::Iam::Sasl::CliTest < Minitest::Test
   end
 
   def test_generate_with_debug
-    ::Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.stub_any_instance :generate_auth_token, ["token", Time.now.to_i] do
+    ::Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.stub_any_instance :generate_auth_token, @token do
       c = Capture.capture do
         ::Aws::Msk::Iam::Sasl::Signer::CLI.start(%w[generate --aws-debug])
       end
@@ -50,8 +54,7 @@ class Aws::Msk::Iam::Sasl::CliTest < Minitest::Test
   end
 
   def test_generate_from_profile_with_known_profile
-    ::Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.stub_any_instance :generate_auth_token_from_profile,
-                                                                      ["token", Time.now.to_i] do
+    ::Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.stub_any_instance :generate_auth_token_from_profile, @token do
       c = Capture.capture do
         ::Aws::Msk::Iam::Sasl::Signer::CLI.start(%w[generate-from-profile --aws-profile known], exit_on_failure: false)
       end
@@ -66,8 +69,7 @@ class Aws::Msk::Iam::Sasl::CliTest < Minitest::Test
   end
 
   def test_generate_from_role_arn_with_role_arn
-    ::Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.stub_any_instance :generate_auth_token_from_role_arn,
-                                                                      ["token", Time.now.to_i] do
+    ::Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.stub_any_instance :generate_auth_token_from_role_arn, @token do
       c = Capture.capture do
         ::Aws::Msk::Iam::Sasl::Signer::CLI.start(%w[generate-from-role-arn --role-arn known], exit_on_failure: false)
       end

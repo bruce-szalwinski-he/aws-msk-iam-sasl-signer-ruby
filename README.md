@@ -143,6 +143,16 @@ To fix lint issues, run `rubocop`.
 ```bash
 bundle exec rubocop -x
 ```
+## Code Climate 
+
+This project uses [code climate](https://github.com/marketplace/code-climate) to maintain code quality.
+Code Climate will be run on every pull request and will fail if the code quality is not maintained.
+Code climate can be run locally using the commands below.
+
+```bash
+brew tap codeclimate/formulae
+brew install codeclimate
+bundle exec rake code_climate
 
 ## CLI
 

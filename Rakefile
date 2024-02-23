@@ -12,6 +12,24 @@ RuboCop::RakeTask.new
 
 task default: %i[test rubocop]
 
+# task :code_climate do
+#   sh "docker",
+#      "run",
+#      "--interactive",
+#      "--tty",
+#      "--rm",
+#      "--env",
+#      "CODECLIMATE_CODE=$(pwd)",
+#      "--volume",
+#      "$(pwd):/code",
+#      "--volume",
+#      "/var/run/docker.sock:/var/run/docker.sock",
+#      "--volume",
+#      "/tmp/cc:/tmp/cc",
+#      "codeclimate/codeclimate",
+#      "analyze"
+# end
+
 # == "rake release" enhancements ==============================================
 
 Rake::Task["release"].enhance do
