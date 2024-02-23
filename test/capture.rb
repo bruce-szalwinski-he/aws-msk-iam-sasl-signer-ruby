@@ -3,7 +3,7 @@
 require "stringio"
 
 class Capture
-  Captured = if defined?(Data)
+  CAPTURED = if defined?(Data)
                Data.define(:result, :stdout, :stderr)
              else
                Struct.new(:result, :stdout, :stderr)
@@ -22,6 +22,6 @@ class Capture
     $stdout = STDOUT
     $stderr = STDERR
 
-    Captured.new(result, stdout.string, stderr.string)
+    CAPTURED.new(result, stdout.string, stderr.string)
   end
 end

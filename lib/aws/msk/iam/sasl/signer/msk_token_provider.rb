@@ -14,11 +14,11 @@ module Aws::Msk::Iam::Sasl::Signer
     USER_AGENT_KEY = "User-Agent"
     SESSION_NAME = "MSKSASLDefaultSession"
 
-    CallerIdentity = if defined?(Data)
+    CALLER_IDENTITY = if defined?(Data)
                        Data.define(:user_id, :account, :arn)
-                     else
+                      else
                        Struct.new(:user_id, :account, :arn)
-                     end
+                      end
 
     def initialize(region:)
       @region = region
@@ -99,7 +99,7 @@ module Aws::Msk::Iam::Sasl::Signer
         secret_access_key: credentials.secret_access_key,
         session_token: credentials.session_token
       )
-      caller_identity = CallerIdentity.new(
+      caller_identity = CALLER_IDENTITY.new(
         sts.get_caller_identity.user_id,
         sts.get_caller_identity.account,
         sts.get_caller_identity.arn
