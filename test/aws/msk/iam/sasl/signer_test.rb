@@ -4,6 +4,15 @@ require "aws-sdk-sts"
 require "base64"
 require "capture"
 
+class TestCredentialProvider
+  include Aws::CredentialProvider
+  def initialize
+    @credentials = Aws::Credentials.new("access_key_id", "secret_access_key")
+  end
+
+  attr_reader :credentials
+end
+
 class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
   def setup
     @creds = Aws::Credentials.new("access_key_id", "secret_access", "session_token")
@@ -83,5 +92,21 @@ class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
       refute_nil @signed_url
       refute_nil @expiration_time_ms
     end
+  end
+
+  def test_generate_auth_token_invalid_credentials_provider
+    token_provider = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: "us-east-1")
+    assert_raises(RuntimeError) do
+      token_provider.generate_auth_token_from_credentials_provider("invalid")
+    end
+  end
+
+  def test_generate_auth_token_valid_credentials_provider
+    token_provider = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: "us-east-1")
+    @signed_url, @expiration_time_ms = token_provider.generate_auth_token_from_credentials_provider(
+      TestCredentialProvider.new
+    )
+    refute_nil @signed_url
+    refute_nil @expiration_time_ms
   end
 end

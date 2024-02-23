@@ -41,6 +41,16 @@ module Aws::Msk::Iam::Sasl::Signer
       [urlsafe_encode64(user_agent(url)), expiration_time_ms(url)]
     end
 
+    def generate_auth_token_from_credentials_provider(credentials_provider)
+      unless credentials_provider.respond_to?(:credentials)
+        raise "Invalid credentials provider"
+      end
+
+      credentials = credentials_provider.credentials
+      url = presign(credentials, endpoint_url)
+      [urlsafe_encode64(user_agent(url)), expiration_time_ms(url)]
+    end
+
     private
 
     def endpoint_url

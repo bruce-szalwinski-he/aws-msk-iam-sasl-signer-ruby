@@ -12,14 +12,12 @@ class Aws::Msk::Iam::Sasl::CliTest < Minitest::Test
     assert_match "Commands", c.stdout
   end
 
-  def test_cli_help
+  def test_cli_version
     c = Capture.capture do
-      ::Aws::Msk::Iam::Sasl::Signer::CLI.start(["--help"])
+      ::Aws::Msk::Iam::Sasl::Signer::CLI.start(["--version"])
     end
-    assert_match "Commands", c.stdout
+    assert_match "signer", c.stdout
   end
-
-
 
   def test_generate
     ::Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.stub_any_instance :generate_auth_token, ["token", Time.now.to_i] do
