@@ -15,10 +15,10 @@ end
 
 class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
   def setup
+    @token_provider = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: "us-east-1")
     @creds = Aws::Credentials.new("access_key_id", "secret_access", "session_token")
     ::Aws::Msk::Iam::Sasl::Signer::CredentialResolver.stub_any_instance :from_credential_provider_chain, @creds do
-      token_provider = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: "us-east-1")
-      @signed_url, @expiration_time_ms = token_provider.generate_auth_token
+      @signed_url, @expiration_time_ms = @token_provider.generate_auth_token
       @decoded_signed_url = Base64.urlsafe_decode64(@signed_url)
       uri = URI.parse(@decoded_signed_url)
       params = URI.decode_www_form(String(uri.query))
@@ -85,8 +85,7 @@ class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
 
   def test_generate_auth_token_from_role_arn
     ::Aws::Msk::Iam::Sasl::Signer::CredentialResolver.stub_any_instance :from_role_arn, @creds do
-      token_provider = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: "us-east-1")
-      @signed_url, @expiration_time_ms = token_provider.generate_auth_token_from_role_arn(
+      @signed_url, @expiration_time_ms = @token_provider.generate_auth_token_from_role_arn(
         role_arn: "arn:aws:iam::123456789012:role/role-name"
       )
       refute_nil @signed_url
@@ -102,8 +101,7 @@ class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
   end
 
   def test_generate_auth_token_valid_credentials_provider
-    token_provider = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: "us-east-1")
-    @signed_url, @expiration_time_ms = token_provider.generate_auth_token_from_credentials_provider(
+    @signed_url, @expiration_time_ms = @token_provider.generate_auth_token_from_credentials_provider(
       TestCredentialProvider.new
     )
     refute_nil @signed_url
