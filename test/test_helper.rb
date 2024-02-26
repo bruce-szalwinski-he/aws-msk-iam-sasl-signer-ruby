@@ -2,7 +2,7 @@ require "simplecov"
 SimpleCov.start
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
-require "aws/msk/iam/sasl/signer"
+require "aws_msk_iam_sasl_signer"
 
 require "minitest/autorun"
 require "minitest/stub_any_instance"

@@ -2,7 +2,7 @@
 
 require "thor"
 
-module Aws::Msk::Iam::Sasl::Signer
+module AwsMskIamSaslSigner
   class CLI < Thor
     extend ThorExt::Start
     map %w[-v --version] => "version"
@@ -22,7 +22,7 @@ module Aws::Msk::Iam::Sasl::Signer
       puts "Expiration Time: #{expiration_time_ms}"
     end
 
-    desc "generate-from-profile", "Generate a token using aws profile"
+    desc "generate-from-profile", "Generate a token using aws-msk-iam-sasl-signer profile"
     option :region, type: :string, default: "us-east-1", desc: "The AWS region"
     option :aws_profile, type: :string, desc: "Name of the AWS profile", required: true
     def generate_from_profile

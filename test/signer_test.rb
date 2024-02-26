@@ -13,11 +13,11 @@ class TestCredentialProvider
   attr_reader :credentials
 end
 
-class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
+class AwsMskIamSaslSigner::SignerTest < Minitest::Test
   def setup
-    @token_provider = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: "us-east-1")
+    @token_provider = AwsMskIamSaslSigner::MSKTokenProvider.new(region: "us-east-1")
     @creds = Aws::Credentials.new("access_key_id", "secret_access", "session_token")
-    ::Aws::Msk::Iam::Sasl::Signer::CredentialResolver.stub_any_instance :from_credential_provider_chain, @creds do
+    AwsMskIamSaslSigner::CredentialResolver.stub_any_instance :from_credential_provider_chain, @creds do
       @signed_url, @expiration_time_ms = @token_provider.generate_auth_token
       @decoded_signed_url = Base64.urlsafe_decode64(@signed_url)
       uri = URI.parse(@decoded_signed_url)
@@ -27,7 +27,7 @@ class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
   end
 
   def test_that_it_has_a_version_number
-    refute_nil ::Aws::Msk::Iam::Sasl::Signer::VERSION
+    refute_nil AwsMskIamSaslSigner::VERSION
   end
 
   def test_generate_auth_token_url
@@ -40,7 +40,7 @@ class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
     assert_equal "session_token", @params["X-Amz-Security-Token"][0]
     assert_equal "host", @params["X-Amz-SignedHeaders"][0]
     assert_equal "900", @params["X-Amz-Expires"][0]
-    assert_match "aws-msk-iam-sasl-signer-ruby", @params["User-Agent"][0]
+    assert_match "aws-msk-iam-sasl-signer-msk-iam-sasl-signer-ruby", @params["User-Agent"][0]
   end
 
   def test_generate_auth_token_credentials
@@ -64,9 +64,9 @@ class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
   def test_generate_auth_token_log_caller_identity
     stub = Aws::STS::Client.new(stub_responses: true)
     c = Capture.capture do
-      ::Aws::Msk::Iam::Sasl::Signer::CredentialResolver.stub_any_instance :from_credential_provider_chain, @creds do
+      AwsMskIamSaslSigner::CredentialResolver.stub_any_instance :from_credential_provider_chain, @creds do
         Aws::STS::Client.stub :new, stub do
-          token_provider = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: "us-east-1")
+          token_provider = AwsMskIamSaslSigner::MSKTokenProvider.new(region: "us-east-1")
           @signed_url, @expiration_time_ms = token_provider.generate_auth_token(aws_debug: true)
         end
       end
@@ -75,8 +75,8 @@ class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
   end
 
   def test_generate_auth_token_from_profile
-    ::Aws::Msk::Iam::Sasl::Signer::CredentialResolver.stub_any_instance :from_profile, @creds do
-      token_provider = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: "us-east-1")
+    AwsMskIamSaslSigner::CredentialResolver.stub_any_instance :from_profile, @creds do
+      token_provider = AwsMskIamSaslSigner::MSKTokenProvider.new(region: "us-east-1")
       @signed_url, @expiration_time_ms = token_provider.generate_auth_token_from_profile(profile: "default")
       refute_nil @signed_url
       refute_nil @expiration_time_ms
@@ -84,9 +84,9 @@ class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
   end
 
   def test_generate_auth_token_from_role_arn
-    ::Aws::Msk::Iam::Sasl::Signer::CredentialResolver.stub_any_instance :from_role_arn, @creds do
+    AwsMskIamSaslSigner::CredentialResolver.stub_any_instance :from_role_arn, @creds do
       @signed_url, @expiration_time_ms = @token_provider.generate_auth_token_from_role_arn(
-        role_arn: "arn:aws:iam::123456789012:role/role-name"
+        role_arn: "arn:aws-msk-iam-sasl-signer:iam::123456789012:role/role-name"
       )
       refute_nil @signed_url
       refute_nil @expiration_time_ms
@@ -94,7 +94,7 @@ class Aws::Msk::Iam::Sasl::SignerTest < Minitest::Test
   end
 
   def test_generate_auth_token_invalid_credentials_provider
-    token_provider = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: "us-east-1")
+    token_provider = AwsMskIamSaslSigner::MSKTokenProvider.new(region: "us-east-1")
     assert_raises(RuntimeError) do
       token_provider.generate_auth_token_from_credentials_provider("invalid")
     end

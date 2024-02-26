@@ -1,8 +1,8 @@
-require_relative "lib/aws/msk/iam/sasl/signer/version"
+require_relative "lib/aws-msk-iam-sasl-signer/version"
 
 Gem::Specification.new do |spec|
   spec.name = "aws-msk-iam-sasl-signer"
-  spec.version = Aws::Msk::Iam::Sasl::Signer::VERSION
+  spec.version = AwsMskIamSaslSigner::VERSION
   spec.authors = ["bruce szalwinski"]
   spec.email = ["bruce.szalwinski@hotelengine.com"]
 
@@ -26,6 +26,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Runtime dependencies
-  spec.add_dependency "aws-sdk-kafka", "~> 1.68"
-  spec.add_dependency "thor", "~> 1.3"
+  spec.add_dependency "aws-sdk-kafka"
+  spec.add_dependency "thor"
 end

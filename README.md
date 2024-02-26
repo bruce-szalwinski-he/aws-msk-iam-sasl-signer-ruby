@@ -31,7 +31,7 @@ To install aws-msk-iam-sasl-signer-ruby, run this command in your terminal.
 This is the preferred method to install aws-msk-iam-sasl-signer-ruby, as it will always install the most recent stable release.
 
 ```bash
-gem install aws-msk-iam-sasl-signer
+gem install aws-msk-iam-sasl-signer-msk-iam-sasl-signer
 ```
 
 ## Usage
@@ -39,7 +39,7 @@ gem install aws-msk-iam-sasl-signer
 ```ruby
 
 # frozen_string_literal: true
-require "aws/msk/iam/sasl/signer"
+require "aws-msk-iam-sasl-signer"
 require "json"
 require "rdkafka"
 
@@ -54,7 +54,7 @@ kafka_config = {
 }
 
 def refresh_token(client, config)
-  signer = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: 'us-east-1')
+  signer = AwsMskIamSaslSigner::MSKTokenProvider.new(region: 'us-east-1')
   token, expiration_time_ms = signer.generate_auth_token
 
   error_buffer = FFI::MemoryPointer.from_string(' ' * 256)
@@ -104,7 +104,7 @@ end
 In order to use a named profile to generate the token, replace the `generate_auth_token` function with code below:
 
 ```ruby
-  signer = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: 'us-east-1')
+  signer = AwsMskIamSaslSigner::MSKTokenProvider.new(region: 'us-east-1')
   token, expiration_time_ms = signer.generate_auth_token_from_profile(
     aws_profile: 'my-profile'
   )
@@ -114,7 +114,7 @@ In order to use a named profile to generate the token, replace the `generate_aut
 In order to use a role arn to generate the token, replace the `generate_auth_token` function with code below:
 
 ```ruby
-    signer = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: 'us-east-1')
+    signer = AwsMskIamSaslSigner::MSKTokenProvider.new(region: 'us-east-1')
     token, expiration_time_ms = signer.generate_auth_token_from_role_arn(
         role_arn: 'arn:aws:iam::1234567890:role/my-role'
     )
@@ -123,7 +123,7 @@ In order to use a role arn to generate the token, replace the `generate_auth_tok
 In order to use a custom credentials provider, replace the `generate_auth_token` function with code below :
 
 ```ruby
-    signer = Aws::Msk::Iam::Sasl::Signer::MSKTokenProvider.new(region: 'us-east-1')
+    signer = AwsMskIamSaslSigner::MSKTokenProvider.new(region: 'us-east-1')
     token, expiration_time_ms = signer.generate_auth_token_from_credentials_provider(
       'your-credentials-provider'
     )

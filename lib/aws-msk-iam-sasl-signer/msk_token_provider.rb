@@ -6,11 +6,11 @@ require "base64"
 require "uri"
 require "json"
 
-module Aws::Msk::Iam::Sasl::Signer
+module AwsMskIamSaslSigner
   class MSKTokenProvider
     ENDPOINT_URL_TEMPLATE = "kafka.{}.amazonaws.com"
     DEFAULT_TOKEN_EXPIRY_SECONDS = 900
-    LIB_NAME = "aws-msk-iam-sasl-signer-ruby"
+    LIB_NAME = "aws-msk-iam-sasl-signer-msk-iam-sasl-signer-ruby"
     USER_AGENT_KEY = "User-Agent"
     SESSION_NAME = "MSKSASLDefaultSession"
 

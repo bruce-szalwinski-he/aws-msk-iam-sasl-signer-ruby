@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
-module Aws::Msk::Iam::Sasl::Signer
+module AwsMskIamSaslSigner
   class CredentialResolver
     def from_credential_provider_chain(region)
       client = Aws::Kafka::Client.new(region: region)
       raise "No credentials found" unless client.config.credentials
 
-      client.config.credentials.credentials
+      client.config.credentials
     end
 
     def from_profile(profile)
-      credentials = Aws::SharedCredentials.new(profile_name: profile)
-      credentials.credentials
+      Aws::SharedCredentials.new(profile_name: profile)
+      # credentials.credentials
     end
 
     def from_role_arn(role_arn:, session_name:)

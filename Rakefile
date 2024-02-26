@@ -73,7 +73,8 @@ namespace :bump do
   end
 
   task :ruby do
-    replace_in_file "aws-msk-iam-sasl-signer.gemspec", /ruby_version = .*">= (.*)"/ => RubyVersions.lowest
+    replace_in_file "aws-msk-iam-sasl-signer.gemspec",
+                    /ruby_version = .*">= (.*)"/ => RubyVersions.lowest
     replace_in_file ".rubocop.yml", /TargetRubyVersion: (.*)/ => RubyVersions.lowest
     replace_in_file ".github/workflows/ci.yml", /ruby: (\[.+\])/ => RubyVersions.all.inspect
   end

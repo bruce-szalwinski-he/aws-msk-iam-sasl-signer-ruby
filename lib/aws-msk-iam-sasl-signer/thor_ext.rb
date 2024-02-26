@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Aws::Msk::Iam::Sasl::Signer
+module AwsMskIamSaslSigner
   module ThorExt
     # Configures Thor to behave more like a typical CLI, with better help and error handling.
     #
