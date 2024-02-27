@@ -25,46 +25,19 @@ class AwsMskIamSaslSigner::GenerateAuthTokenTest < Minitest::Test
 
   def test_generate_auth_token
     AwsMskIamSaslSigner::CredentialsResolver.stub_any_instance :from_credential_provider_chain, @creds do
-      signed_url, expiration_time_ms = @token_provider.generate_auth_token
-      decoded_signed_url = Base64.urlsafe_decode64(signed_url)
-      uri = URI.parse(decoded_signed_url)
-      params = URI.decode_www_form(String(uri.query))
-      params = params.group_by(&:first).transform_values { |a| a.map(&:last) }
-
-      assert_url(decoded_signed_url)
-      assert_query_parameters(params)
-      assert_credentials(params)
-      assert_expiration_time_ms(params, expiration_time_ms)
+      assert_token(*@token_provider.generate_auth_token)
     end
   end
 
   def test_generate_auth_token_from_profile
     AwsMskIamSaslSigner::CredentialsResolver.stub_any_instance :from_profile, @creds do
-      signed_url, expiration_time_ms = @token_provider.generate_auth_token_from_profile("default")
-      decoded_signed_url = Base64.urlsafe_decode64(signed_url)
-      uri = URI.parse(decoded_signed_url)
-      params = URI.decode_www_form(String(uri.query))
-      params = params.group_by(&:first).transform_values { |a| a.map(&:last) }
-
-      assert_url(decoded_signed_url)
-      assert_query_parameters(params)
-      assert_credentials(params)
-      assert_expiration_time_ms(params, expiration_time_ms)
+      assert_token(*@token_provider.generate_auth_token_from_profile("test-profile"))
     end
   end
 
   def test_generate_auth_token_from_role_arn
     AwsMskIamSaslSigner::CredentialsResolver.stub_any_instance :from_role_arn, @creds do
-      signed_url, expiration_time_ms = @token_provider.generate_auth_token_from_role_arn("role_arn")
-      decoded_signed_url = Base64.urlsafe_decode64(signed_url)
-      uri = URI.parse(decoded_signed_url)
-      params = URI.decode_www_form(String(uri.query))
-      params = params.group_by(&:first).transform_values { |a| a.map(&:last) }
-
-      assert_url(decoded_signed_url)
-      assert_query_parameters(params)
-      assert_credentials(params)
-      assert_expiration_time_ms(params, expiration_time_ms)
+      assert_token(*@token_provider.generate_auth_token_from_role_arn("role_arn"))
     end
   end
 
@@ -72,18 +45,27 @@ class AwsMskIamSaslSigner::GenerateAuthTokenTest < Minitest::Test
     signed_url, expiration_time_ms = @token_provider.generate_auth_token_from_credentials_provider(
       TestCredentialsProvider.new
     )
+    assert_token(signed_url, expiration_time_ms)
+  end
+
+  private
+
+  def parse_url(signed_url)
     decoded_signed_url = Base64.urlsafe_decode64(signed_url)
     uri = URI.parse(decoded_signed_url)
     params = URI.decode_www_form(String(uri.query))
     params = params.group_by(&:first).transform_values { |a| a.map(&:last) }
+    [decoded_signed_url, params]
+  end
+
+  def assert_token(signed_url, expiration_time_ms)
+    decoded_signed_url, params = parse_url(signed_url)
 
     assert_url(decoded_signed_url)
     assert_query_parameters(params)
     assert_credentials(params)
     assert_expiration_time_ms(params, expiration_time_ms)
   end
-
-  private
 
   def assert_url(decoded_signed_url)
     assert_match "https://kafka.us-east-1.amazonaws.com/?Action=kafka-cluster%3AConnect", decoded_signed_url
