@@ -31,7 +31,7 @@ To install aws-msk-iam-sasl-signer-ruby, run this command in your terminal.
 This is the preferred method to install aws-msk-iam-sasl-signer-ruby, as it will always install the most recent stable release.
 
 ```bash
-gem install aws-msk-iam-sasl-signer-msk-iam-sasl-signer
+gem install aws-msk-iam-sasl-signer
 ```
 
 ## Usage
