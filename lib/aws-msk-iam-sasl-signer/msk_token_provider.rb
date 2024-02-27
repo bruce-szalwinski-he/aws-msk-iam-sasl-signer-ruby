@@ -25,21 +25,24 @@ module AwsMskIamSaslSigner
     end
 
     def generate_auth_token(aws_debug: false)
-      credentials = CredentialResolver.new.from_credential_provider_chain(@region)
+      credentials = CredentialsResolver.new.from_credential_provider_chain(@region)
       log_caller_identity(credentials, @region) if aws_debug
       url = presign(credentials, endpoint_url)
       [urlsafe_encode64(user_agent(url)), expiration_time_ms(url)]
     end
 
     def generate_auth_token_from_profile(profile)
-      credentials = CredentialResolver.new.from_profile(profile)
+      credentials = CredentialsResolver.new.from_profile(profile)
       url = presign(credentials, endpoint_url)
       [urlsafe_encode64(user_agent(url)), expiration_time_ms(url)]
     end
 
     def generate_auth_token_from_role_arn(role_arn, session_name=nil)
       session_name ||= SESSION_NAME
-      credentials = CredentialResolver.new.from_role_arn(role_arn: role_arn, session_name: session_name)
+      credentials = CredentialsResolver.new.from_role_arn(
+        role_arn: role_arn,
+        session_name: session_name
+      )
       url = presign(credentials, endpoint_url)
       [urlsafe_encode64(user_agent(url)), expiration_time_ms(url)]
     end
@@ -47,8 +50,7 @@ module AwsMskIamSaslSigner
     def generate_auth_token_from_credentials_provider(credentials_provider)
       raise "Invalid credentials provider" unless credentials_provider.respond_to?(:credentials)
 
-      credentials = credentials_provider.credentials
-      url = presign(credentials, endpoint_url)
+      url = presign(credentials_provider, endpoint_url)
       [urlsafe_encode64(user_agent(url)), expiration_time_ms(url)]
     end
 
@@ -62,11 +64,11 @@ module AwsMskIamSaslSigner
       URI::HTTPS.build(host: host, path: "/", query: URI.encode_www_form(query_params))
     end
 
-    def presign(credentials, url)
+    def presign(credentials_provider, url)
       signer = Aws::Sigv4::Signer.new(
         service: "kafka-cluster",
         region: @region,
-        credentials: credentials
+        credentials_provider: credentials_provider
       )
       signer.presign_url(
         http_method: "GET",
@@ -92,12 +94,12 @@ module AwsMskIamSaslSigner
       1000 * (signing_time.to_time.to_i + DEFAULT_TOKEN_EXPIRY_SECONDS)
     end
 
-    def log_caller_identity(credentials, region)
+    def log_caller_identity(credentials_provider, region)
       sts = Aws::STS::Client.new(
         region: region,
-        access_key_id: credentials.access_key_id,
-        secret_access_key: credentials.secret_access_key,
-        session_token: credentials.session_token
+        access_key_id: credentials_provider.credentials.access_key_id,
+        secret_access_key: credentials_provider.credentials.secret_access_key,
+        session_token: credentials_provider.credentials.session_token
       )
       caller_identity = CALLER_IDENTITY.new(
         sts.get_caller_identity.user_id,
