@@ -1,17 +1,9 @@
 # frozen_string_literal: true
 
-require 'minitest/autorun'
+require "minitest/autorun"
 
-class VersionTest < Minitest::Test
-  def setup
-    # Do nothing
-  end
-
-  def teardown
-    # Do nothing
-  end
-
-  def test
-    skip 'Not implemented'
+class AwsMskIamSaslSigner::VersionTest < Minitest::Test
+  def test_that_it_has_a_version_number
+    refute_nil AwsMskIamSaslSigner::VERSION
   end
 end
