@@ -3,7 +3,7 @@
 require "aws-sigv4"
 
 module AwsMskIamSaslSigner
-  class CredentialsProviderResolver
+  class CredentialsResolver
     def from_credential_provider_chain(region)
       client = Aws::Kafka::Client.new(region: region)
       raise "No credentials found" unless client.config.credentials
