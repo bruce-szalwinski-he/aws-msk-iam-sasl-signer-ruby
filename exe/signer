@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 
-require "aws/msk/iam/sasl/signer"
-Aws::Msk::Iam::Sasl::Signer::CLI.start(ARGV)
+require "aws_msk_iam_sasl_signer"
+AwsMskIamSaslSigner::CLI.start(ARGV)

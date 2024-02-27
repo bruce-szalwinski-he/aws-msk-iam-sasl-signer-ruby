@@ -11,13 +11,11 @@ module AwsMskIamSaslSigner
 
     def from_profile(profile)
       Aws::SharedCredentials.new(profile_name: profile)
-      # credentials.credentials
     end
 
     def from_role_arn(role_arn:, session_name:)
       sts = Aws::STS::Client.new
-      assumed_role = sts.assume_role({ role_arn: role_arn, role_session_name: session_name })
-      assumed_role.credentials
+      sts.assume_role({ role_arn: role_arn, role_session_name: session_name })
     end
   end
 end

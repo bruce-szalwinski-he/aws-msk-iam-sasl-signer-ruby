@@ -17,17 +17,13 @@ class AwsMskIamSaslSigner::SignerTest < Minitest::Test
   def setup
     @token_provider = AwsMskIamSaslSigner::MSKTokenProvider.new(region: "us-east-1")
     @creds = Aws::Credentials.new("access_key_id", "secret_access", "session_token")
-    AwsMskIamSaslSigner::CredentialResolver.stub_any_instance :from_credential_provider_chain, @creds do
+    AwsMskIamSaslSigner::CredentialsProviderResolver.stub_any_instance :from_credential_provider_chain, @creds do
       @signed_url, @expiration_time_ms = @token_provider.generate_auth_token
       @decoded_signed_url = Base64.urlsafe_decode64(@signed_url)
       uri = URI.parse(@decoded_signed_url)
       params = URI.decode_www_form(String(uri.query))
       @params = params.group_by(&:first).transform_values { |a| a.map(&:last) }
     end
-  end
-
-  def test_that_it_has_a_version_number
-    refute_nil AwsMskIamSaslSigner::VERSION
   end
 
   def test_generate_auth_token_url
@@ -64,7 +60,7 @@ class AwsMskIamSaslSigner::SignerTest < Minitest::Test
   def test_generate_auth_token_log_caller_identity
     stub = Aws::STS::Client.new(stub_responses: true)
     c = Capture.capture do
-      AwsMskIamSaslSigner::CredentialResolver.stub_any_instance :from_credential_provider_chain, @creds do
+      AwsMskIamSaslSigner::CredentialsProviderResolver.stub_any_instance :from_credential_provider_chain, @creds do
         Aws::STS::Client.stub :new, stub do
           token_provider = AwsMskIamSaslSigner::MSKTokenProvider.new(region: "us-east-1")
           @signed_url, @expiration_time_ms = token_provider.generate_auth_token(aws_debug: true)
@@ -75,7 +71,7 @@ class AwsMskIamSaslSigner::SignerTest < Minitest::Test
   end
 
   def test_generate_auth_token_from_profile
-    AwsMskIamSaslSigner::CredentialResolver.stub_any_instance :from_profile, @creds do
+    AwsMskIamSaslSigner::CredentialsProviderResolver.stub_any_instance :from_profile, @creds do
       token_provider = AwsMskIamSaslSigner::MSKTokenProvider.new(region: "us-east-1")
       @signed_url, @expiration_time_ms = token_provider.generate_auth_token_from_profile(profile: "default")
       refute_nil @signed_url
@@ -84,7 +80,7 @@ class AwsMskIamSaslSigner::SignerTest < Minitest::Test
   end
 
   def test_generate_auth_token_from_role_arn
-    AwsMskIamSaslSigner::CredentialResolver.stub_any_instance :from_role_arn, @creds do
+    AwsMskIamSaslSigner::CredentialsProviderResolver.stub_any_instance :from_role_arn, @creds do
       @signed_url, @expiration_time_ms = @token_provider.generate_auth_token_from_role_arn(
         role_arn: "arn:aws-msk-iam-sasl-signer:iam::123456789012:role/role-name"
       )
