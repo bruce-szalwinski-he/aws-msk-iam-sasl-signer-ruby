@@ -50,14 +50,6 @@ class AwsMskIamSaslSigner::GenerateAuthTokenTest < Minitest::Test
 
   private
 
-  def parse_url(signed_url)
-    decoded_signed_url = Base64.urlsafe_decode64(signed_url)
-    uri = URI.parse(decoded_signed_url)
-    params = URI.decode_www_form(String(uri.query))
-    params = params.group_by(&:first).transform_values { |a| a.map(&:last) }
-    [decoded_signed_url, params]
-  end
-
   def assert_token(signed_url, expiration_time_ms)
     decoded_signed_url, params = parse_url(signed_url)
 
@@ -65,6 +57,14 @@ class AwsMskIamSaslSigner::GenerateAuthTokenTest < Minitest::Test
     assert_query_parameters(params)
     assert_credentials(params)
     assert_expiration_time_ms(params, expiration_time_ms)
+  end
+
+  def parse_url(signed_url)
+    decoded_signed_url = Base64.urlsafe_decode64(signed_url)
+    uri = URI.parse(decoded_signed_url)
+    params = URI.decode_www_form(String(uri.query))
+    params = params.group_by(&:first).transform_values { |a| a.map(&:last) }
+    [decoded_signed_url, params]
   end
 
   def assert_url(decoded_signed_url)
