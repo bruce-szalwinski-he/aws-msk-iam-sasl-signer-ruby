@@ -5,7 +5,7 @@ require "uri"
 
 module AwsMskIamSaslSigner
   autoload :MSKTokenProvider, "aws-msk-iam-sasl-signer/msk_token_provider"
-  autoload :CredentialResolver, "aws-msk-iam-sasl-signer/credential_resolver"
+  autoload :CredentialsResolver, "aws-msk-iam-sasl-signer/credentials_resolver"
   autoload :VERSION, "aws-msk-iam-sasl-signer/version"
   autoload :CLI, "aws-msk-iam-sasl-signer/cli"
   autoload :ThorExt, "aws-msk-iam-sasl-signer/thor_ext"
