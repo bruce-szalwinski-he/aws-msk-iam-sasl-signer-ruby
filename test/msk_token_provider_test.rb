@@ -17,7 +17,7 @@ class TestCredentialsProvider
   attr_reader :credentials
 end
 
-class AwsMskIamSaslSigner::GenerateAuthTokenTest < Minitest::Test
+class AwsMskIamSaslSigner::MskTokenProviderTest < Minitest::Test
   def setup
     @token_provider = AwsMskIamSaslSigner::MSKTokenProvider.new(region: "us-east-1")
     @creds = Aws::Credentials.new("access_key_id", "secret_access", "session_token")
@@ -25,7 +25,17 @@ class AwsMskIamSaslSigner::GenerateAuthTokenTest < Minitest::Test
 
   def test_generate_auth_token
     AwsMskIamSaslSigner::CredentialsResolver.stub_any_instance :from_credential_provider_chain, @creds do
-      assert_token(*@token_provider.generate_auth_token)
+      assert_token(*@token_provider.generate_auth_token.compact!)
+    end
+  end
+
+  def test_generate_auth_token_with_aws_debug
+    AwsMskIamSaslSigner::CredentialsResolver.stub_any_instance :from_credential_provider_chain, @creds do
+      Aws::STS::Client.stub :new, Aws::STS::Client.new(stub_responses: true) do
+        _, _, caller_identity = @token_provider.generate_auth_token(aws_debug: true)
+        refute_nil caller_identity
+        assert_kind_of AwsMskIamSaslSigner::MSKTokenProvider::CALLER_IDENTITY, caller_identity
+      end
     end
   end
 

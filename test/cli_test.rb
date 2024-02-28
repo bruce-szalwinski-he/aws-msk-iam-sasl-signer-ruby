@@ -37,7 +37,7 @@ class AwsMskIamSaslSigner::CliTest < Minitest::Test
       c = Capture.capture do
         AwsMskIamSaslSigner::CLI.start(%w[generate --aws-debug])
       end
-      assert_match "Token", c.stdout
+      assert_match "Caller Identity", c.stdout
     end
   end
 
