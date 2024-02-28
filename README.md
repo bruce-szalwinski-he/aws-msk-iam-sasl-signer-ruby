@@ -183,7 +183,7 @@ MSKAuthTokenProvider.generate_auth_token(aws_debug: true)
 `generate_auth_token` will return a third value, the caller identity:
 
 ```ruby
-signed_url, expiration_time_ms, identity = MSKAuthTokenProvider.generate_auth_token(aws_debug: true)
+token, expiration_time_ms, identity = MSKAuthTokenProvider.generate_auth_token(aws_debug: true)
 puts "Caller identity: #{identity}"
 ```
 
