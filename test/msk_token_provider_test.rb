@@ -25,48 +25,49 @@ class AwsMskIamSaslSigner::MskTokenProviderTest < Minitest::Test
 
   def test_generate_auth_token
     AwsMskIamSaslSigner::CredentialsResolver.stub_any_instance :from_credential_provider_chain, @creds do
-      assert_token(*@token_provider.generate_auth_token.compact!)
+      assert_token(@token_provider.generate_auth_token)
     end
   end
 
   def test_generate_auth_token_with_aws_debug
     AwsMskIamSaslSigner::CredentialsResolver.stub_any_instance :from_credential_provider_chain, @creds do
       Aws::STS::Client.stub :new, Aws::STS::Client.new(stub_responses: true) do
-        _, _, caller_identity = @token_provider.generate_auth_token(aws_debug: true)
-        refute_nil caller_identity
-        assert_kind_of AwsMskIamSaslSigner::MSKTokenProvider::CALLER_IDENTITY, caller_identity
+        auth_token = @token_provider.generate_auth_token(aws_debug: true)
+        refute_nil auth_token.caller_identity
+        assert_kind_of AwsMskIamSaslSigner::CallerIdentity, auth_token.caller_identity
       end
     end
   end
 
   def test_generate_auth_token_from_profile
     AwsMskIamSaslSigner::CredentialsResolver.stub_any_instance :from_profile, @creds do
-      assert_token(*@token_provider.generate_auth_token_from_profile("test-profile"))
+      assert_token(@token_provider.generate_auth_token_from_profile("test-profile"))
     end
   end
 
   def test_generate_auth_token_from_role_arn
     AwsMskIamSaslSigner::CredentialsResolver.stub_any_instance :from_role_arn, @creds do
-      assert_token(*@token_provider.generate_auth_token_from_role_arn("role_arn"))
+      assert_token(@token_provider.generate_auth_token_from_role_arn("role_arn"))
     end
   end
 
   def test_generate_auth_token_from_credentials_provider
-    signed_url, expiration_time_ms = @token_provider.generate_auth_token_from_credentials_provider(
-      TestCredentialsProvider.new
+    assert_token(
+      @token_provider.generate_auth_token_from_credentials_provider(
+        TestCredentialsProvider.new
+      )
     )
-    assert_token(signed_url, expiration_time_ms)
   end
 
   private
 
-  def assert_token(signed_url, expiration_time_ms)
-    decoded_signed_url, params = parse_url(signed_url)
+  def assert_token(auth_token)
+    decoded_signed_url, params = parse_url(auth_token.token)
 
     assert_url(decoded_signed_url)
     assert_query_parameters(params)
     assert_credentials(params)
-    assert_expiration_time_ms(params, expiration_time_ms)
+    assert_expiration_time_ms(params, auth_token.expiration_time_ms)
   end
 
   def parse_url(signed_url)

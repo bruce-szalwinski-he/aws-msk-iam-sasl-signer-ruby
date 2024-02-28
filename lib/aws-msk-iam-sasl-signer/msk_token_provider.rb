@@ -6,18 +6,15 @@ require "base64"
 require "uri"
 
 module AwsMskIamSaslSigner
+  CallerIdentity = Struct.new(:user_id, :account, :arn)
+  AuthToken = Struct.new(:token, :expiration_time_ms, :caller_identity)
+
   class MSKTokenProvider
     ENDPOINT_URL_TEMPLATE = "kafka.{}.amazonaws.com"
     DEFAULT_TOKEN_EXPIRY_SECONDS = 900
     LIB_NAME = "aws-msk-iam-sasl-signer-msk-iam-sasl-signer-ruby"
     USER_AGENT_KEY = "User-Agent"
     SESSION_NAME = "MSKSASLDefaultSession"
-
-    CALLER_IDENTITY = if defined?(Data)
-                        Data.define(:user_id, :account, :arn)
-                      else
-                        Struct.new(:user_id, :account, :arn)
-                      end
 
     def initialize(region:)
       @region = region
@@ -27,13 +24,20 @@ module AwsMskIamSaslSigner
       credentials = CredentialsResolver.new.from_credential_provider_chain(@region)
       caller_identity = caller_identity(credentials, @region) if aws_debug
       url = presign(credentials, endpoint_url)
-      [urlsafe_encode64(user_agent(url)), expiration_time_ms(url), caller_identity]
+      AuthToken.new(
+        urlsafe_encode64(user_agent(url)),
+        expiration_time_ms(url),
+        caller_identity
+      )
     end
 
     def generate_auth_token_from_profile(profile)
       credentials = CredentialsResolver.new.from_profile(profile)
       url = presign(credentials, endpoint_url)
-      [urlsafe_encode64(user_agent(url)), expiration_time_ms(url)]
+      AuthToken.new(
+        urlsafe_encode64(user_agent(url)),
+        expiration_time_ms(url)
+      )
     end
 
     def generate_auth_token_from_role_arn(role_arn, session_name=nil)
@@ -43,14 +47,20 @@ module AwsMskIamSaslSigner
         session_name: session_name
       )
       url = presign(credentials, endpoint_url)
-      [urlsafe_encode64(user_agent(url)), expiration_time_ms(url)]
+      AuthToken.new(
+        urlsafe_encode64(user_agent(url)),
+        expiration_time_ms(url)
+      )
     end
 
     def generate_auth_token_from_credentials_provider(credentials_provider)
       raise "Invalid credentials provider" unless credentials_provider.respond_to?(:credentials)
 
       url = presign(credentials_provider, endpoint_url)
-      [urlsafe_encode64(user_agent(url)), expiration_time_ms(url)]
+      AuthToken.new(
+        urlsafe_encode64(user_agent(url)),
+        expiration_time_ms(url)
+      )
     end
 
     private
@@ -100,7 +110,7 @@ module AwsMskIamSaslSigner
         secret_access_key: credentials_provider.credentials.secret_access_key,
         session_token: credentials_provider.credentials.session_token
       )
-      CALLER_IDENTITY.new(
+      CallerIdentity.new(
         sts.get_caller_identity.user_id,
         sts.get_caller_identity.account,
         sts.get_caller_identity.arn

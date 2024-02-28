@@ -55,11 +55,11 @@ kafka_config = {
 
 def refresh_token(client, config)
   signer = AwsMskIamSaslSigner::MSKTokenProvider.new(region: 'us-east-1')
-  token, expiration_time_ms = signer.generate_auth_token
+  auth_token = signer.generate_auth_token
 
   error_buffer = FFI::MemoryPointer.from_string(' ' * 256)
   response = Rdkafka::Bindings.rd_kafka_oauthbearer_set_token(
-    client, token, expiration_time_ms, 'kafka-cluster', nil, 0, error_buffer, 256
+    client, auth_token.token, auth_token.expiration_time_ms, 'kafka-cluster', nil, 0, error_buffer, 256
   )
   return unless response != 0
 
@@ -105,7 +105,7 @@ In order to use a named profile to generate the token, replace the `generate_aut
 
 ```ruby
   signer = AwsMskIamSaslSigner::MSKTokenProvider.new(region: 'us-east-1')
-  token, expiration_time_ms = signer.generate_auth_token_from_profile(
+  auth_token = signer.generate_auth_token_from_profile(
     aws_profile: 'my-profile'
   )
 ```
@@ -115,7 +115,7 @@ In order to use a role arn to generate the token, replace the `generate_auth_tok
 
 ```ruby
     signer = AwsMskIamSaslSigner::MSKTokenProvider.new(region: 'us-east-1')
-    token, expiration_time_ms = signer.generate_auth_token_from_role_arn(
+    auth_token = signer.generate_auth_token_from_role_arn(
         role_arn: 'arn:aws:iam::1234567890:role/my-role'
     )
 ```
@@ -124,7 +124,7 @@ In order to use a custom credentials provider, replace the `generate_auth_token`
 
 ```ruby
     signer = AwsMskIamSaslSigner::MSKTokenProvider.new(region: 'us-east-1')
-    token, expiration_time_ms = signer.generate_auth_token_from_credentials_provider(
+    auth_token = signer.generate_auth_token_from_credentials_provider(
       'your-credentials-provider'
     )
 ```
@@ -183,8 +183,8 @@ MSKAuthTokenProvider.generate_auth_token(aws_debug: true)
 `generate_auth_token` will return a third value, the caller identity:
 
 ```ruby
-token, expiration_time_ms, identity = MSKAuthTokenProvider.generate_auth_token(aws_debug: true)
-puts "Caller identity: #{identity}"
+auth_token = MSKAuthTokenProvider.generate_auth_token(aws_debug: true)
+puts "Caller identity: #{auth_token.caller_identity}"
 ```
 
 ## Support
