@@ -171,7 +171,8 @@ Commands:
 
 ### Finding out which identity is being used
 
-You may receive an Access denied error and there may be some doubt as to which credential is being exactly used.
+When using the token to authenticate against an MSK cluster, you may receive an Access denied error.
+There may be some doubt as to which credential is being exactly used.
 The credential may be sourced from a role ARN, EC2 instance profile, credential profile etc.
 When calling `generate_auth_token`, you can set `aws_debug` argument to `true`.
 
@@ -179,10 +180,11 @@ When calling `generate_auth_token`, you can set `aws_debug` argument to `true`.
 MSKAuthTokenProvider.generate_auth_token(aws_debug: true)
 ```
 
-The signer library will print a debug log of the form:
+`generate_auth_token` will return a third value, the caller identity:
 
 ```ruby
-Credentials Identity: {"user_id": "ABCD:test124", "account": "1234567890", "arn": "arn:aws:sts::1234567890:assumed-role/abc/test124"}
+signed_url, expiration_time_ms, identity = MSKAuthTokenProvider.generate_auth_token(aws_debug: true)
+puts "Caller identity: #{identity}"
 ```
 
 ## Support
