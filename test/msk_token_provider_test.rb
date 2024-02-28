@@ -34,7 +34,7 @@ class AwsMskIamSaslSigner::MskTokenProviderTest < Minitest::Test
       Aws::STS::Client.stub :new, Aws::STS::Client.new(stub_responses: true) do
         auth_token = @token_provider.generate_auth_token(aws_debug: true)
         refute_nil auth_token.caller_identity
-        assert_kind_of AwsMskIamSaslSigner::CallerIdentity, auth_token.caller_identity
+        assert_kind_of AwsMskIamSaslSigner::MSKTokenProvider::CallerIdentity, auth_token.caller_identity
       end
     end
   end

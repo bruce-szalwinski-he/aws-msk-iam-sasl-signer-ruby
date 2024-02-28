@@ -2,7 +2,6 @@
 
 require "test_helper"
 require "aws-sdk-kafka"
-require "minitest/autorun"
 
 class AwsMskIamSaslSigner::CredentialsResolverTest < Minitest::Test
   def test_from_credential_provider_chain_raises_error_when_no_credentials

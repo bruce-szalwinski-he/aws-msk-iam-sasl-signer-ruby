@@ -17,15 +17,15 @@ module AwsMskIamSaslSigner
     option :aws_debug, type: :boolean, default: false, desc: "Log caller identity when using credential provider chain"
     def generate
       token_provider = MSKTokenProvider.new(region: options[:region])
-      signed_url, expiration_time_ms, caller_identity = token_provider.generate_auth_token(
+      token = token_provider.generate_auth_token(
         aws_debug: options[:aws_debug]
       )
 
-      puts "Token: #{signed_url}"
-      puts "Expiration Time: #{expiration_time_ms}"
+      puts "Token: #{token.token}"
+      puts "Expiration Time: #{token.expiration_time_ms}"
       return unless options[:aws_debug]
 
-      puts "Caller Identity: #{caller_identity.to_h.to_json}"
+      puts "Caller Identity: #{token.caller_identity.to_h.to_json}"
     end
 
     desc "generate-from-profile", "Generate a token using aws-msk-iam-sasl-signer profile"

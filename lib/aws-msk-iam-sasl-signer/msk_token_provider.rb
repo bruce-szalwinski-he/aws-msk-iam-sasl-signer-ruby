@@ -6,15 +6,14 @@ require "base64"
 require "uri"
 
 module AwsMskIamSaslSigner
-  CallerIdentity = Struct.new(:user_id, :account, :arn)
-  AuthToken = Struct.new(:token, :expiration_time_ms, :caller_identity)
-
   class MSKTokenProvider
     ENDPOINT_URL_TEMPLATE = "kafka.{}.amazonaws.com"
     DEFAULT_TOKEN_EXPIRY_SECONDS = 900
     LIB_NAME = "aws-msk-iam-sasl-signer-msk-iam-sasl-signer-ruby"
     USER_AGENT_KEY = "User-Agent"
     SESSION_NAME = "MSKSASLDefaultSession"
+    CallerIdentity = Struct.new(:user_id, :account, :arn)
+    AuthToken = Struct.new(:token, :expiration_time_ms, :caller_identity)
 
     def initialize(region:)
       @region = region

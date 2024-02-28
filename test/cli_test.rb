@@ -6,7 +6,11 @@ require "thor"
 
 class AwsMskIamSaslSigner::CliTest < Minitest::Test
   def setup
-    @token = ["token", Time.now.to_i]
+    @auth_token = AwsMskIamSaslSigner::MSKTokenProvider::AuthToken.new(
+      "token",
+      Time.now.to_i,
+      AwsMskIamSaslSigner::MSKTokenProvider::CallerIdentity.new("user_id", "account", "arn")
+    )
   end
 
   def test_cli_with_no_commands
@@ -24,16 +28,17 @@ class AwsMskIamSaslSigner::CliTest < Minitest::Test
   end
 
   def test_generate
-    AwsMskIamSaslSigner::MSKTokenProvider.stub_any_instance :generate_auth_token, @token do
+    AwsMskIamSaslSigner::MSKTokenProvider.stub_any_instance :generate_auth_token, @auth_token do
       c = Capture.capture do
         AwsMskIamSaslSigner::CLI.start(["generate"])
       end
       assert_match "Token", c.stdout
+      assert_match "Expiration Time", c.stdout
     end
   end
 
   def test_generate_with_debug
-    AwsMskIamSaslSigner::MSKTokenProvider.stub_any_instance :generate_auth_token, @token do
+    AwsMskIamSaslSigner::MSKTokenProvider.stub_any_instance :generate_auth_token, @auth_token do
       c = Capture.capture do
         AwsMskIamSaslSigner::CLI.start(%w[generate --aws-debug])
       end
@@ -54,7 +59,7 @@ class AwsMskIamSaslSigner::CliTest < Minitest::Test
   end
 
   def test_generate_from_profile_with_known_profile
-    AwsMskIamSaslSigner::MSKTokenProvider.stub_any_instance :generate_auth_token_from_profile, @token do
+    AwsMskIamSaslSigner::MSKTokenProvider.stub_any_instance :generate_auth_token_from_profile, @auth_token do
       generate_token(%w[generate-from-profile --aws-profile known])
     end
   end
@@ -66,7 +71,7 @@ class AwsMskIamSaslSigner::CliTest < Minitest::Test
   end
 
   def test_generate_from_role_arn_with_role_arn
-    AwsMskIamSaslSigner::MSKTokenProvider.stub_any_instance :generate_auth_token_from_role_arn, @token do
+    AwsMskIamSaslSigner::MSKTokenProvider.stub_any_instance :generate_auth_token_from_role_arn, @auth_token do
       generate_token(%w[generate-from-role-arn --role-arn known])
     end
   end
