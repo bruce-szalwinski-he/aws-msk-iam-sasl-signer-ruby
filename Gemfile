@@ -1,7 +1,6 @@
 source "https://rubygems.org"
 gemspec
 
-gem "aws-sdk-kafka", "~> 1.68"
 gem "base64", "~> 0.2"
 gem "minitest", "~> 5.11"
 gem "minitest-rg", "~> 5.3"
@@ -13,4 +12,3 @@ gem "rubocop-packaging", "0.5.2"
 gem "rubocop-performance", "1.20.2"
 gem "rubocop-rake", "0.6.0"
 gem "simplecov", require: false, group: :test
-gem "thor", "~> 1.3"
