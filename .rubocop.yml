@@ -73,6 +73,9 @@ Metrics/ParameterLists:
 Minitest/EmptyLineBeforeAssertionMethods:
   Enabled: false
 
+Minitest/MultipleAssertions:
+  Max: 20
+
 Naming/MemoizedInstanceVariableName:
   Enabled: false
 
@@ -108,3 +111,12 @@ Style/StringLiterals:
 
 Style/TrivialAccessors:
   AllowPredicates: true
+
+inherit_mode:
+  merge:
+    - AllowedNames
+
+Naming/MethodParameterName:
+  AllowedNames:
+    - a
+    - b

@@ -1,4 +1,6 @@
-module Example
+# frozen_string_literal: true
+
+module AwsMskIamSaslSigner
   module ThorExt
     # Configures Thor to behave more like a typical CLI, with better help and error handling.
     #
@@ -58,7 +60,7 @@ module Example
         return if error.is_a?(Errno::EPIPE)
         raise if ENV["VERBOSE"] || !config.fetch(:exit_on_failure, true)
 
-        message = error.message.to_s
+        message = error.message.to_s.dup
         message.prepend("[#{error.class}] ") if message.empty? || !error.is_a?(Thor::Error)
 
         config[:shell]&.say_error(message, :red)
