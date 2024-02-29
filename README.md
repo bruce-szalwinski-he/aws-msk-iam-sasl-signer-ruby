@@ -143,8 +143,7 @@ To fix lint issues, run `rubocop`.
 ```bash
 bundle exec rubocop -x
 ```
-## Code Climate 
-
+## Code Climate
 
 This project uses [code climate](https://github.com/marketplace/code-climate) to maintain code quality.
 Code Climate will be run on every pull request and will fail if the code quality is not maintained.
