@@ -152,7 +152,7 @@ Code climate can be run locally using the commands below.
 ```bash
 brew tap codeclimate/formulae
 brew install codeclimate
-bundle exec rake code_climate
+bundle exec rake codeclimate
 
 ## CLI
 
