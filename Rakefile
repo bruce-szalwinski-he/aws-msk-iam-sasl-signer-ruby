@@ -13,7 +13,7 @@ RuboCop::RakeTask.new
 task default: %i[test rubocop]
 
 task :codeclimate do
-  sh "./codeclimate.sh"
+  sh "./codeclimate.sh", verbose: false
 end
 
 # == "rake release" enhancements ==============================================
