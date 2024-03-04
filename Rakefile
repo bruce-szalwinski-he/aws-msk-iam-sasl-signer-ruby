@@ -16,13 +16,6 @@ task :codeclimate do
   sh "./codeclimate.sh", verbose: false
 end
 
-# == "rake release" enhancements ==============================================
-
-Rake::Task["release"].enhance do
-  puts "Don't forget to publish the release on GitHub!"
-  system "open https://github.com/bruce-szalwinski-he/aws-msk-iam-sasl-signer-ruby/releases"
-end
-
 task :disable_overcommit do
   ENV["OVERCOMMIT_DISABLE"] = "1"
 end
