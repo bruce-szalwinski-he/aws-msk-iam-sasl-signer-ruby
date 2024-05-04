@@ -36,7 +36,7 @@ gem install aws-msk-iam-sasl-signer
 
 ## Examples
 
-- [rdkafka](examples/rdkafka/example.rb) (using rdkafka gem)
+- [rdkafka](examples/rdkafka/README.md) (using rdkafka gem)
 
 
 In order to use a named profile to generate the token, replace the `generate_auth_token` function with code below:
