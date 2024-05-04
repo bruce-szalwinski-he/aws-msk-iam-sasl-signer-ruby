@@ -4,7 +4,6 @@ require "rdkafka"
 require_relative './oauth_token_refresher'
 
 module Producer
-
   CLIENTS = {}
 
   def self.from_name(client_name)
@@ -26,5 +25,4 @@ module Producer
     handle = @producer.produce(**args)
     handle.wait(max_wait_timeout: 10)
   end
-
 end
