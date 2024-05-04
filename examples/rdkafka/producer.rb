@@ -1,15 +1,13 @@
 # frozen_string_literal: true
 
 require "rdkafka"
-require_relative './oauth_token_refresher'
+require_relative "oauth_token_refresher"
 
 module Producer
-  CLIENTS = {}
+  CLIENTS = {}.freeze
 
   def self.from_name(client_name)
-    if CLIENTS[client_name].nil?
-      raise "Client not found: #{client_name}\n"
-    end
+    raise "Client not found: #{client_name}\n" if CLIENTS[client_name].nil?
 
     CLIENTS[client_name]
   end

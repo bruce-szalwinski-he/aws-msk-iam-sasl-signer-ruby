@@ -6,14 +6,14 @@ require "rdkafka"
 class OAuthTokenRefresher
   def refresh_token(client_name)
     print "refreshing token\n"
-    signer = AwsMskIamSaslSigner::MSKTokenProvider.new(region: ENV['AWS_REGION'])
+    signer = AwsMskIamSaslSigner::MSKTokenProvider.new(region: ENV.fetch("AWS_REGION", nil))
     token = signer.generate_auth_token
 
     client = Producer.from_name(client_name)
     client.oauthbearer_set_token(
       token: token.token,
       lifetime_ms: token.expiration_time_ms,
-      principal_name: 'kafka-cluster'
+      principal_name: "kafka-cluster"
     )
   end
 end
