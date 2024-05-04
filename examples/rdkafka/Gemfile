@@ -1,0 +1,7 @@
+source "https://rubygems.org"
+
+gem "aws-msk-iam-sasl-signer"
+gem "karafka-rdkafka"
+gem 'rexml', '~> 3.2'
+gem 'base64'
+gem 'shale'
