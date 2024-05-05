@@ -1,6 +1,6 @@
 # aws-msk-iam-sasl-signer with rdkafka
 
-This example demonstrates how to use the `aws-msk-iam-sasl-signer` gem with the [karafka-rdkafka](https://rubygems.org/gems/karafka-rdkafka) gem.
+This example demonstrates how to use [aws-msk-iam-sasl-signer-ruby](https://github.com/bruce-szalwinski-he/aws-msk-iam-sasl-signer-ruby) with the [karafka-rdkafka](https://rubygems.org/gems/karafka-rdkafka).
 
 
 ## Usage
