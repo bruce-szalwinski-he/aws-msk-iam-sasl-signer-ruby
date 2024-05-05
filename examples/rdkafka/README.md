@@ -25,7 +25,7 @@ bundle exec ruby example.rb
 
 Configure the oauthbearer refresh token callback.
 Create a producer / consumer / admin client using the delayed start feature.
-This allows the client to be registered with the `CLIENTS` hash.
+This allows the client to be registered with the `@clients` hash.
 Then start the client using the `start` method.
 
 ```ruby
