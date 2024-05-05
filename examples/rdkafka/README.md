@@ -40,7 +40,7 @@ Then start the client using the `start` method.
 At the initial start and every time the token needs to be refreshed, the `refresh_token` method is called.
 The callback will receive the name of the client.
 Use the `AwsMskIamSaslSigner::MSKTokenProvider` to generate a new token and set it on the client.
-Use the `CLIENTS` hash to get the client by name.
+Use the `@clients` hash to get the client by name.
 
 ```ruby
   def refresh_token(client_name)
