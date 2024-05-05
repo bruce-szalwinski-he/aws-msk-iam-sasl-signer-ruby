@@ -32,7 +32,7 @@ Then start the client using the `start` method.
   def self.start!(kafka_config)
     Rdkafka::Config.oauthbearer_token_refresh_callback = method(:refresh_token)
     @producer = Rdkafka::Config.new(kafka_config).producer(native_kafka_auto_start: false)
-    CLIENTS[@producer.name] = @producer
+    @clients[@producer.name] = @producer
     @producer.start
   end
 ```
