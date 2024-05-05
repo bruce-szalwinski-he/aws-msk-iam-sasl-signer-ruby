@@ -10,7 +10,7 @@ class OAuthTokenRefresher
     event[:bearer].oauthbearer_set_token(
       token: token.token,
       lifetime_ms: token.expiration_time_ms,
-      principal_name: 'kafka-cluster'
+      principal_name: "kafka-cluster"
     )
   end
 end
