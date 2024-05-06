@@ -17,12 +17,33 @@ APP_LOADER = Zeitwerk::Loader.new
 APP_LOADER.setup
 APP_LOADER.eager_load
 
+class OAuthTokenRefresher
+  def on_oauthbearer_token_refresh(event)
+    print "refreshing token\n"
+
+    signer = AwsMskIamSaslSigner::MSKTokenProvider.new(region: ENV.fetch("AWS_REGION", nil))
+    token = signer.generate_auth_token
+    if token
+      event[:bearer].oauthbearer_set_token(
+        token: token.token,
+        lifetime_ms: token.expiration_time_ms,
+        principal_name: "kafka-cluster"
+      )
+    else
+      event[:bearer].oauthbearer_set_token_failure(
+        "Failed to generate token."
+      )
+    end
+  end
+end
+
 # App class
 class App < Karafka::App
   setup do |config|
     config.concurrency = 5
     config.max_wait_time = 1_000
-    config.kafka = { 'bootstrap.servers': ENV['KAFKA_HOST'] || '127.0.0.1:9092' }
+    config.kafka = { 'bootstrap.servers': ENV['KAFKA_BOOTSTRAP_SERVERS'] }
+    config.oauth.token_provider_listener = OAuthTokenRefresher.new
   end
 end
 
