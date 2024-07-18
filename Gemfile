@@ -2,6 +2,7 @@ source "https://rubygems.org"
 gemspec
 
 gem "base64", "~> 0.2"
+gem "logger", "~> 1.6"
 gem "minitest", "~> 5.11"
 gem "minitest-rg", "~> 5.3"
 gem "minitest-stub_any_instance", "~> 1.0"
