@@ -2,7 +2,7 @@ source "https://rubygems.org"
 gemspec
 
 gem "base64", "~> 0.2"
-gem 'bigdecimal', '~> 3.1', '>= 3.1.8'
+gem 'bigdecimal', "~> 3.1", ">= 3.1.8"
 gem "logger", "~> 1.6"
 gem "minitest", "~> 5.11"
 gem "minitest-rg", "~> 5.3"
