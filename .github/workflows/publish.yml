@@ -25,3 +25,10 @@ jobs:
 
       # Release
       - uses: rubygems/release-gem@v1
+
+      # Release Notes
+      - uses: ncipollo/release-action@v1
+        with:
+          generateReleaseNotes: true
+          name: 'v${{ github.ref_name }}'
+          token: ${{ github.token }}
