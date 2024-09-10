@@ -138,3 +138,17 @@ Everyone interacting in this project’s codebases, issue trackers, chat rooms a
 ## Contribution guide
 
 Pull requests are welcome!
+
+## Releasing
+
+- create PR with version change
+- bump version in `lib/aws-msk-iam-sasl-signer/version.rb`
+- approve and merge
+
+```bash
+git checkout main
+git pull origin main
+VERSION=$(grep -o 'VERSION = "[^"]*' lib/aws-msk-iam-sasl-signer/version.rb | grep -o '[^"]*$')
+git tag -a ${VERSION} -m "${VERSION}"
+git push origin ${VERSION}
+```
