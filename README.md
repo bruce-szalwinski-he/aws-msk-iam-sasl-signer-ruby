@@ -148,7 +148,7 @@ Pull requests are welcome!
 ```bash
 git checkout main
 git pull origin main
-VERSION=$(grep -o 'VERSION = "[^"]*' lib/aws-msk-iam-sasl-signer/version.rb | grep -o '[^"]*$')
+VERSION="v$(grep -o 'VERSION = "[^"]*' lib/aws-msk-iam-sasl-signer/version.rb | grep -o '[^"]*$')"
 git tag -a ${VERSION} -m "${VERSION}"
 git push origin ${VERSION}
 ```
