@@ -12,7 +12,7 @@ gem "rake", "~> 13.0"
 gem "rubocop", "1.73.1"
 gem "rubocop-minitest", "0.37.0"
 gem "rubocop-packaging", "0.5.2"
-gem "rubocop-performance", "1.23.1"
+gem "rubocop-performance", "1.24.0"
 gem "rubocop-rake", "0.6.0"
 gem "simplecov", require: false, group: :test
 gem "simplecov_json_formatter", group: :test
