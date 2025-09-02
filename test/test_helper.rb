@@ -1,4 +1,11 @@
 require "simplecov"
+require "simplecov_json_formatter"
+
+SimpleCov.formatters = [
+  SimpleCov::Formatter::HTMLFormatter,
+  SimpleCov::Formatter::JSONFormatter
+]
+
 SimpleCov.start
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
