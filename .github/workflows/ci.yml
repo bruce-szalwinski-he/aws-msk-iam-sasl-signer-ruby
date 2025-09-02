@@ -32,4 +32,4 @@ jobs:
         with:
           token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
           files: ./coverage/coverage.json
-          report-format: simplecov
+          format: simplecov
