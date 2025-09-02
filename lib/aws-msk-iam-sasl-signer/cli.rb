@@ -6,6 +6,7 @@ require "json"
 module AwsMskIamSaslSigner
   class CLI < Thor
     extend ThorExt::Start
+
     map %w[-v --version] => "version"
     desc "version", "Display signer version", hide: true
     def version
