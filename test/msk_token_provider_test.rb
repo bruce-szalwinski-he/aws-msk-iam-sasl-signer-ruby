@@ -6,6 +6,7 @@ require "capture"
 
 class TestCredentialsProvider
   include Aws::CredentialProvider
+
   def initialize
     @credentials = Aws::Credentials.new(
       "access_key_id",
