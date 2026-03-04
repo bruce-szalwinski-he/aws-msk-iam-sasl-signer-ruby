@@ -112,6 +112,10 @@ Style/StringLiterals:
 Style/TrivialAccessors:
   AllowPredicates: true
 
+Style/OneClassPerFile:
+  Exclude:
+    - test/msk_token_provider_test.rb
+
 inherit_mode:
   merge:
     - AllowedNames
